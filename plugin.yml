@@ -1,0 +1,47 @@
+name: PureEntitiesX
+main: revivalpmmp\pureentities\PureEntities
+version: 0.7.0-pm5-fixed
+api: 5.0.0
+load: POSTWORLD
+authors:
+  - milk0417
+  - RevivalPMMP
+description: Implement all MCPE entities into your worlds - Fixed for PMMP 5.x
+website: https://github.com/RevivalPMMP/PureEntitiesX
+permissions:
+  pureentities.command:
+    description: Permite usar todos los comandos de PureEntitiesX
+    default: op
+  pureentities.command.pesummon:
+    description: Permite spawnear mobs (/pesummon)
+    default: op
+  pureentities.command.peremove:
+    description: Permite eliminar todas las entidades no-jugador de chunks cargados (/peremove)
+    default: op
+  pureentities.command.peinfo:
+    description: Permite ver información de entidades (/peinfo)
+    default: op
+  pureentities.command.peset:
+    description: Permite configurar propiedades de entidades (/peset)
+    default: op
+  pureentities.command.perespawn:
+    description: Permite respawnear entidades (/perespawn)
+    default: op
+  pureentities.command.pelist:
+    description: Permite listar entidades cargadas (/pelist)
+    default: op
+  pureentities.command.pebreed:
+    description: Permite forzar breeding (/pebreed)
+    default: op
+  pureentities.command.pestop:
+    description: Permite detener spawns temporales (/pestop)
+    default: op
+  pureentities.command.pereload:
+    description: Permite recargar la configuración (/pereload)
+    default: op
+  pureentities.admin:
+    description: Permiso administrativo completo (todos los comandos + bypass)
+    default: op
+  pureentities.bypass:
+    description: Permite bypass de restricciones de spawn
+    default: op
