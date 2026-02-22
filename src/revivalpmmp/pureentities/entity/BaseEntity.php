@@ -203,16 +203,14 @@ abstract class BaseEntity extends Living implements IntfCanBreed, IntfTameable
     }
 
     public function saveNBT(): CompoundTag
-		$nbt = parent::saveNBT();
     {
-        $nbt = $nbt = parent::saveNBT();
+        $nbt = parent::saveNBT();
         if (PluginConfiguration::getInstance()->getEnableNBT()) {
             $this->namedtag->setByte(NBTConst::NBT_KEY_MOVEMENT, (int)$this->isMovement(), true);
             $this->namedtag->setByte(NBTConst::NBT_KEY_WALL_CHECK, (int)$this->isWallCheck(), true);
             $this->namedtag->setInt(NBTConst::NBT_KEY_AGE_IN_TICKS, $this->ticksLived, true);
             $this->idlingComponent->saveNBT();
-		return $nbt;
-	        }
+        }
         return $nbt;
     }
 
