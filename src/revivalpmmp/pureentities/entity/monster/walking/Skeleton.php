@@ -22,13 +22,21 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
 use pocketmine\block\Water;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\projectile\ProjectileSource;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityShootBowEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\ItemFactory;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\MobEquipment;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -47,8 +55,8 @@ class Skeleton extends WalkingMonster implements IntfCanEquip, ProjectileSource{
 
 	protected $pickUpLoot = [];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->attackDistance = 16;
 		$this->mobEquipment = new MobEquipment($this);
 		$this->mobEquipment->init();

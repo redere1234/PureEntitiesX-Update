@@ -22,11 +22,17 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\ItemIds;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\components\MobEquipment;
 use revivalpmmp\pureentities\data\Data;
@@ -59,8 +65,8 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed, Monst
 	 */
 	private $pickUpLoot = [ItemIds::IRON_SWORD, ItemIds::IRON_SHOVEL];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 1.1;
 		$this->setDamage([0, 2, 3, 4]);
 

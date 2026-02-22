@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -40,8 +41,8 @@ class Rabbit extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Int
 	use Breedable, CanPanic, Feedable;
 	const NETWORK_ID = Data::NETWORK_IDS["rabbit"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 2;
 		$this->setNormalSpeed(1.1);
 		$this->setPanicSpeed(1.3);
@@ -54,13 +55,11 @@ class Rabbit extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Int
 		$this->jumper = true;
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->breedableClass->saveNBT();
-		}
 	}
-
 	/**
 	 * Returns the appropriate NetworkID associated with this entity
 	 * @return int
@@ -68,11 +67,9 @@ class Rabbit extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Int
 	public function getNetworkId(){
 		return self::NETWORK_ID;
 	}
-
 	public function getName() : string{
 		return "Rabbit";
 	}
-
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
@@ -82,19 +79,15 @@ class Rabbit extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Int
 			}else{
 				array_push($drops, ItemFactory::getInstance()->get(Item::RAW_RABBIT, 0, mt_rand(0, 1)));
 			}
-
 			if(mt_rand(0, 100) <= 10){ // at 10 percent chance, rabbits drop rabbit's foot
 				array_push($drops, ItemFactory::getInstance()->get(Item::RABBIT_FOOT, 0, 1));
 			}
 		}
-
 		return $drops;
 	}
-
 	public function getMaxHealth() : int{
 		return 3;
 	}
-
 	public function updateXpDropAmount() : void{
 		if($this->getBreedingComponent()->checkInLove()){
 			$this->xpDropAmount = mt_rand(1, 4);
@@ -103,4 +96,5 @@ class Rabbit extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Int
 			$this->xpDropAmount = mt_rand(1, 3);
 		}
 	}
+	return $nbt;
 }

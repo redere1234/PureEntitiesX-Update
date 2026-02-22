@@ -22,9 +22,13 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\entity\Living;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Rideable;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
 
@@ -32,8 +36,8 @@ class Mule extends WalkingAnimal implements Rideable{
 
 	const NETWORK_ID = Data::NETWORK_IDS["mule"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{

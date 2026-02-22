@@ -27,8 +27,8 @@ use revivalpmmp\pureentities\entity\animal\SwimmingAnimal;
 class Tropicalfish extends SwimmingAnimal{
 	const NETWORK_ID = Data::NETWORK_IDS["tropicalfish"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 1.1;
 	}
 

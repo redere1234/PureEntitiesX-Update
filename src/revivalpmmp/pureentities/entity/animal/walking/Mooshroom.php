@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\features\IntfShearable;
@@ -34,8 +35,8 @@ class Mooshroom extends Cow implements IntfShearable{
 
 	const NETWORK_ID = Data::NETWORK_IDS["mooshroom"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->maxShearDrops = 5;
 		$this->shearItems = Item::RED_MUSHROOM;
 	}
@@ -56,12 +57,11 @@ class Mooshroom extends Cow implements IntfShearable{
 		}
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->getBreedingComponent()->saveNBT();
 			$this->namedtag->setByte(NBTConst::NBT_KEY_SHEARED, $this->isSheared() ? 0 : 1, true);
-		}
 	}
-
+	return $nbt;
 }

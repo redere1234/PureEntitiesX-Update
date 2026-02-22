@@ -22,7 +22,9 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\entity\Rideable;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -39,8 +41,8 @@ class Pig extends WalkingAnimal implements Rideable, IntfCanBreed, IntfCanIntera
 	use Breedable, CanPanic, Feedable;
 	const NETWORK_ID = Data::NETWORK_IDS["pig"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->feedableItems = array(
 			Item::CARROT,
 			Item::BEETROOT);
@@ -52,13 +54,11 @@ class Pig extends WalkingAnimal implements Rideable, IntfCanBreed, IntfCanIntera
 		return "Pig";
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->breedableClass->saveNBT();
-		}
 	}
-
 	public function getDrops() : array{
 		if($this->isLootDropAllowed()){
 			if($this->isOnFire()){
@@ -70,11 +70,9 @@ class Pig extends WalkingAnimal implements Rideable, IntfCanBreed, IntfCanIntera
 			return [];
 		}
 	}
-
 	public function getMaxHealth() : int{
 		return 10;
 	}
-
 	public function updateXpDropAmount() : void{
 		if($this->getBreedingComponent()->checkInLove()){
 			$this->xpDropAmount = mt_rand(1, 7);
@@ -83,13 +81,11 @@ class Pig extends WalkingAnimal implements Rideable, IntfCanBreed, IntfCanIntera
 			$this->xpDropAmount = mt_rand(1, 3);
 		}
 	}
-
 	/**
 	 * @return null
 	 */
 	public function getRidePosition(){
 		return null;
 	}
-
-
+	return $nbt;
 }

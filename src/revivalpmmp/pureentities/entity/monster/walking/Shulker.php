@@ -22,7 +22,9 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\Monster;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -39,8 +41,8 @@ class Shulker extends WalkingMonster implements Monster{
 
 	const NETWORK_ID = Data::NETWORK_IDS["shulker"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 0;
 
 		$this->setDamage([0, 2, 2, 3]);

@@ -22,8 +22,11 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\entity\Living;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -77,8 +80,8 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 		return 0.8;
 	}
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 1.2;
 		$this->setNormalSpeed($this->speed);
 		$this->setPanicSpeed(1.4);
@@ -196,40 +199,31 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 		}
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->namedtag->setByte(NBTConst::NBT_KEY_CATTYPE, $this->catType, true); // sets ocelot skin
 			$this->breedableClass->saveNBT();
-		}
-
 	}
-
 	public function targetOption(Living $creature, float $distance) : bool{
-
 		if($creature instanceof Player){
 			return $creature->spawned && $creature->isAlive() && !$creature->isClosed() && $creature->getInventory()->getItemInHand()->getTypeId() === ItemIds::RAW_FISH && $distance <= 49;
 		}
 		return false;
 	}
-
 	public function getDrops() : array{
 		return [];
 	}
-
 	public function getMaxHealth() : int{
 		return 10;
 	}
-
 	private function onTameSuccess(Player $player){
 		$this->setCatType(mt_rand(1, 3)); // Randomly chooses a tamed skin
 	}
-
 	private function onTameFail(Player $player){
 		$this->getBreedingComponent()->feed($player);
 		return;
 	}
-
 	/**
 	 * Sets the skin type of the ocelot.
 	 * 0 = Wild Ocelot, 1 = Tuxedo, 2 = Tabby, 3 = Siamese
@@ -240,7 +234,6 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 		$this->catType = $type;
 		$this->getDataPropertyManager()->setPropertyValue(self::DATA_VARIANT, self::DATA_TYPE_INT, $type);
 	}
-
 	/**
 	 * Returns which skin is set in catType
 	 * 0 = Wild Ocelot, 1 = Tuxedo, 2 = Tabby, 3 = Siamese
@@ -250,8 +243,6 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 	public function getCatType() : int{
 		return $this->catType;
 	}
-
-
 	/**
 	 * Checks if the ocelot is tamed, not sitting and has a "physically" available owner.
 	 * If so and the distance to the owner is more than 12 blocks: set position to the position
@@ -279,7 +270,6 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 			}
 		}
 	}
-
 	public function updateXpDropAmount() : void{
 		if($this->getBreedingComponent()->checkInLove()){
 			$this->xpDropAmount = mt_rand(1, 7);
@@ -288,5 +278,5 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 			$this->xpDropAmount = mt_rand(1, 3);
 		}
 	}
-
+	return $nbt;
 }

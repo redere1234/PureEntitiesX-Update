@@ -49,39 +49,34 @@ class MagmaCube extends JumpingMonster{
 		$this->setScale($this->cubeSize);
 	}
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 0.8;
 
 		$this->fireProof = true;
 		$this->setDamage([0, 3, 4, 6]);
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->namedtag->setByte(NBTConst::NBT_KEY_CUBE_SIZE, $this->cubeSize, true);
-		}
 	}
-
 	public function loadFromNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			if($nbt->hasTag(NBTConst::NBT_KEY_CUBE_SIZE)){
 				$cubeSize = $nbt->getByte(NBTConst::NBT_KEY_CUBE_SIZE, self::getRandomCubeSize());
 				$this->cubeSize = $cubeSize;
-			}
+	}
 		}
 	}
-
 	public function getName() : string{
 		return "MagmaCube";
 	}
-
 	public static function getRandomCubeSize() : int{
 		($size = mt_rand(1, 3)) !== 3 ?: $size = 4;
 		return $size;
 	}
-
 	/**
 	 * Attack a player
 	 *
@@ -93,11 +88,9 @@ class MagmaCube extends JumpingMonster{
 			$ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
 				MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
 			$player->attack($ev);
-
 			$this->checkTamedMobsAttack($player);
 		}
 	}
-
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
@@ -112,7 +105,6 @@ class MagmaCube extends JumpingMonster{
 		}
 		return $drops;
 	}
-
 	public function updateXpDropAmount() : void{
 		// normally it would be set by small/medium/big sized - but as we have it not now - i'll make it more static
 		if($this->cubeSize === 2){
@@ -123,6 +115,5 @@ class MagmaCube extends JumpingMonster{
 			$this->xpDropAmount = 1;
 		}
 	}
-
-
+	return $nbt;
 }

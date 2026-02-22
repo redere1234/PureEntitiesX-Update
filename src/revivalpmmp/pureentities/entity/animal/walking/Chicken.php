@@ -22,7 +22,9 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\sound\PopSound;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -45,8 +47,8 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
 	private $dropEggTimer = 0;
 	private $dropEggTime = 0;
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->eyeHeight = 0.6;
 		$this->gravity = 0.08;
 
@@ -60,21 +62,16 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
 			Item::BEETROOT_SEEDS);
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->breedableClass->saveNBT();
-		}
 	}
-
 	public function getName() : string{
 		return "Chicken";
 	}
-
-
 	public function getDrops() : array{
 		$drops = [];
-
 		if($this->isLootDropAllowed()){
 			// only adult chicken drop something ...
 			if($this->breedableClass !== null && !$this->breedableClass->isBaby()){
@@ -88,37 +85,29 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
 		}
 		return $drops;
 	}
-
 	public function getMaxHealth() : int{
 		return 4;
 	}
-
-
 	// ----- functionality to lay an eg ... -------------
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->dropEggTime === 0){
 			$this->dropEggTime = mt_rand(self::DROP_EGG_DELAY_MIN, self::DROP_EGG_DELAY_MAX);
 		}
-
 		if($this->dropEggTimer >= $this->dropEggTime){ // drop an egg!
 			$this->layEgg();
 		}else{
 			$this->dropEggTimer += $tickDiff;
 		}
-
 		parent::entityBaseTick($tickDiff);
 		return true;
 	}
-
 	private function layEgg(){
 		$item = ItemFactory::getInstance()->get(Item::EGG, 0, 1);
 		$this->getWorld()->dropItem($this, $item);
 		$this->getWorld()->addSound(new PopSound($this), $this->getViewers());
-
 		$this->dropEggTimer = 0;
 		$this->dropEggTime = 0;
 	}
-
 	public function updateXpDropAmount() : void{
 		if($this->getBreedingComponent()->checkInLove()){
 			$this->xpDropAmount = mt_rand(1, 7);
@@ -127,6 +116,5 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
 			$this->xpDropAmount = mt_rand(1, 3);
 		}
 	}
-
-
+	return $nbt;
 }

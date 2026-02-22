@@ -47,8 +47,8 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
 	use Shearable;
 	const NETWORK_ID = Data::NETWORK_IDS["snow_golem"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 
 		$this->setFriendly(true);
 		$this->setSheared($this->isSheared()); // set data from NBT
@@ -151,12 +151,10 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
 	/**
 	 * Stores internal variables to NBT
 	 */
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->namedtag->setByte(NBTConst::NBT_KEY_PUMPKIN, $this->sheared ? 0 : 1); // default: has pumpkin on his head (1 - pumpkin on head, 0 - pumpkin off!)
-		}
 	}
-
-
+	return $nbt;
 }

@@ -22,8 +22,11 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
 use revivalpmmp\pureentities\utils\MobDamageCalculator;
@@ -34,8 +37,8 @@ class Endermite extends WalkingMonster{
 	// Base created from Silverfish
 	// TODO Update Endermite specifics
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 1.4;
 
 		$this->setMaxDamage(1);

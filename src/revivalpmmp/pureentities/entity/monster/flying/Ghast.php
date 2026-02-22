@@ -44,8 +44,8 @@ class Ghast extends FlyingMonster implements ProjectileSource{
 		parent::__construct($level, $nbt);
 	}
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 1.2;
 		$this->fireProof = true;
 		$this->setDamage([0, 0, 0, 0]);

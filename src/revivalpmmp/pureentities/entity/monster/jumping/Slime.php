@@ -52,38 +52,33 @@ class Slime extends JumpingMonster{
 		$this->setScale($this->cubeSize);
 	}
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 0.8;
 
 		$this->setDamage([0, 2, 2, 3]);
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->namedtag->setByte(NBTConst::NBT_KEY_CUBE_SIZE, $this->cubeSize, true);
-		}
 	}
-
 	public function loadFromNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			if($nbt->hasTag(NBTConst::NBT_KEY_CUBE_SIZE)){
 				$cubeSize = $nbt->getByte(NBTConst::NBT_KEY_CUBE_SIZE, self::getRandomSlimeSize());
 				$this->cubeSize = $cubeSize;
-			}
+	}
 		}
 	}
-
 	public function getName() : string{
 		return "Slime";
 	}
-
 	public static function getRandomSlimeSize() : int{
 		($size = mt_rand(1, 3)) !== 3 ?: $size = 4;
 		return $size;
 	}
-
 	/**
 	 * Attack a player
 	 *
@@ -92,22 +87,18 @@ class Slime extends JumpingMonster{
 	public function attackEntity(Entity $player){
 		if($this->attackDelay > 10 && $this->distanceSquared($player) < 2){
 			$this->attackDelay = 0;
-
 			$ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
 				MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
 			$player->attack($ev);
-
 			$this->checkTamedMobsAttack($player);
 		}
 	}
-
 	public function targetOption(Living $creature, float $distance) : bool{
 		if($creature instanceof Player){
 			return $creature->isAlive() && $distance <= 25;
 		}
 		return false;
 	}
-
 	public function getDrops() : array{
 		if($this->isLootDropAllowed() and $this->cubeSize === 0){
 			return [ItemFactory::getInstance()->get(Item::SLIMEBALL, 0, mt_rand(0, 2))];
@@ -115,11 +106,9 @@ class Slime extends JumpingMonster{
 			return [];
 		}
 	}
-
 	public function getMaxHealth() : int{
 		return 4;
 	}
-
 	public function updateXpDropAmount() : void{
 		if($this->cubeSize === 2){
 			$this->xpDropAmount = 4;
@@ -129,5 +118,5 @@ class Slime extends JumpingMonster{
 			$this->xpDropAmount = 1;
 		}
 	}
-
+	return $nbt;
 }

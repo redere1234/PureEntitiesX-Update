@@ -22,12 +22,19 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\ItemIds;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\components\MobEquipment;
 use revivalpmmp\pureentities\data\Data;
@@ -71,8 +78,8 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 	 */
 	private $pickUpLoot = [];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->speed = 1.1;
 		$this->setDamage([0, 2, 3, 4]);
 
@@ -104,21 +111,18 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 	/**
 	 * Saves important variables to the NBT
 	 */
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->namedtag->setInt(NBTConst::NBT_KEY_ANGRY, $this->angryValue, true);
-		}
 		$this->breedableClass->saveNBT();
 	}
-
 	/**
 	 * @return bool
 	 */
 	public function isAngry() : bool{
 		return $this->angryValue > 0;
 	}
-
 	/**
 	 * @param int  $val
 	 * @param bool $init
@@ -134,19 +138,15 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 			$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_ANGRY, $val > 0);
 		}
 	}
-
 	protected function sendSpawnPacket(Player $player) : void{
 		parent::sendSpawnPacket($player);
 		$this->mobEquipment->sendEquipmentUpdate($player);
 	}
-
 	public function getName() : string{
 		return "ZombiePigman";
 	}
-
 	public function setHealth(float $amount) : void{
 		parent::setHealth($amount);
-
 		if($this->isAlive()){
 			if(15 < $this->getHealth()){
 				$this->setDamage([0, 2, 3, 4]);
@@ -159,7 +159,6 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 			}
 		}
 	}
-
 	/**
 	 * Zombie gets attacked. We need to recalculate the damage done with reducing the damage by armor type.
 	 *
@@ -177,12 +176,9 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 			PureEntities::logOutput("$this: reduce damage by $reduceBy");
 			$damage = $damage - $reduceBy;
 		}
-
 		PureEntities::logOutput("$this: attacked with final damage of $damage");
-
 		parent::attack($source);
 	}
-
 	/**
 	 * This zombie attacks a player
 	 *
@@ -200,19 +196,14 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 			$ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
 				MobDamageCalculator::calculateFinalDamage($player, $damage));
 			$player->attack($ev);
-
 			$this->checkTamedMobsAttack($player);
 		}
 	}
-
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->isClosed()) return false;
 		// Timings::$timerEntityBaseTick->startTiming();
-
 		$this->getMobEquipment()->entityBaseTick($tickDiff);
-
 		$hasUpdate = parent::entityBaseTick($tickDiff);
-
 		$time = $this->getWorld() !== null ? $this->getWorld()->getTime() % World::TIME_FULL : World::TIME_NIGHT;
 		if(
 			!$this->isOnFire()
@@ -223,7 +214,6 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 		// Timings::$timerEntityBaseTick->stopTiming();
 		return $hasUpdate;
 	}
-
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
@@ -245,11 +235,9 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 		}
 		return $drops;
 	}
-
 	public function getMaxHealth() : int{
 		return 20;
 	}
-
 	public function updateXpDropAmount() : void{
 		if($this->getBreedingComponent()->isBaby()){
 			$this->xpDropAmount = 12;
@@ -257,22 +245,18 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 		}
 		$this->xpDropAmount = 5;
 	}
-
-
 	// -------------------- equipment methods --------------------
-
 	/**
 	 * @return MobEquipment
 	 */
 	public function getMobEquipment() : MobEquipment{
 		return $this->mobEquipment;
 	}
-
 	/**
 	 * @return array
 	 */
 	public function getPickupLoot() : array{
 		return $this->pickUpLoot;
 	}
-
+	return $nbt;
 }

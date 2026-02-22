@@ -22,14 +22,23 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\flying;
 
 use pocketmine\block\Liquid;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\Stair;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\StoneSlab;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Living;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Math;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector2;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\Animal;
 use revivalpmmp\pureentities\entity\BaseEntity;
@@ -42,8 +51,8 @@ class Vex extends FlyingMonster implements Monster{
 	// TODO create methods specific to Vexes
 	const NETWORK_ID = Data::NETWORK_IDS["vex"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->gravity = 0.04;
 
 		$this->setDamage([0, 0, 0, 0]);

@@ -22,13 +22,21 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\block\Air;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\Block;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\Dirt;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\Grass;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\TallGrass;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Color;
 use revivalpmmp\pureentities\data\Data;
@@ -73,8 +81,8 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 		return intval($arr[mt_rand(0, count($arr) - 1)]);
 	}
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->breedableClass = new BreedingComponent($this);
 		$this->breedableClass->init();
 		$this->feedableItems = array(Item::WHEAT);
@@ -144,20 +152,19 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 	/**
 	 * Stores internal variables to NBT
 	 */
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+		$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->namedtag->setTag(new ByteTag(NBTConst::NBT_KEY_SHEARED, (int) $this->sheared));
 			$this->namedtag->setTag(new ByteTag(NBTConst::NBT_KEY_COLOR, $this->color));
+			$this->breedableClass->saveNBT();
 		}
-		$this->breedableClass->saveNBT();
+		return $nbt;
 	}
 
 	// ------------------------------------------------------------
 	// very sheep specific functions
 	// ------------------------------------------------------------
-
-
 	/**
 	 * Gets the color of the sheep
 	 *
@@ -166,7 +173,6 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 	public function getColor() : int{
 		return $this->color;
 	}
-
 	/**
 	 * Set the color of the sheep
 	 *
@@ -176,7 +182,6 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 		$this->color = $color;
 		$this->getDataPropertyManager()->setPropertyValue(self::DATA_COLOUR, self::DATA_TYPE_BYTE, $color);
 	}
-
 	/**
 	 * When a sheep is sheared, it tries to eat grass. This method signalizes, that the entity reached
 	 * a grass block or something that can be eaten.
@@ -207,7 +212,6 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 		$this->setBaseTarget(null);
 		$this->checkTarget(false); // find a new target to move to ...
 	}
-
 	public function updateXpDropAmount() : void{
 		if($this->getBreedingComponent()->checkInLove()){
 			$this->xpDropAmount = mt_rand(1, 7);
@@ -216,6 +220,4 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 			$this->xpDropAmount = mt_rand(1, 3);
 		}
 	}
-
-
 }

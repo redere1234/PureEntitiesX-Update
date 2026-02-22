@@ -22,7 +22,9 @@ namespace revivalpmmp\pureentities\entity\animal\flying;
 
 
 use pocketmine\entity\Living;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\animal\FlyingAnimal;
@@ -38,8 +40,8 @@ class Parrot extends FlyingAnimal implements IntfTameable, IntfCanInteract{
 	const NETWORK_ID = Data::NETWORK_IDS["parrot"];
 	private $birdType; // 0 = red, 1 = blue, 2 = green, 3 = cyan, 4 = silver
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->fireProof = false;
 		$this->tameFoods = array(
 			Item::SEEDS,
@@ -70,43 +72,35 @@ class Parrot extends FlyingAnimal implements IntfTameable, IntfCanInteract{
 		}
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(): CompoundTag {
+	$nbt = parent::saveNBT();
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
 			$this->namedtag->setByte(NBTConst::NBT_KEY_BIRDTYPE, $this->birdType, true);
-		}
 	}
-
 	public function getName() : string{
 		return "Parrot";
 	}
-
 	public function targetOption(Living $creature, float $distance) : bool{
 		return false;
 	}
-
 	public function getDrops() : array{
 		return [ItemFactory::getInstance()->get(Item::FEATHER, 0, mt_rand(1, 2))];
 	}
-
 	public function getMaxHealth() : int{
 		return 6;
 	}
-
 	public function updateXpDropAmount() : void{
 		$this->xpDropAmount = mt_rand(1, 3);
 	}
-
 	public function getRandomBirdType() : int{
 		return mt_rand(0, 4);
 	}
-
 	public function setBirdType(int $type){
 		$this->birdType = $type;
 		$this->getDataPropertyManager()->setPropertyValue(self::DATA_VARIANT, self::DATA_TYPE_INT, $type);
 	}
-
 	public function getBirdType(){
 		return $this->birdType;
 	}
+	return $nbt;
 }

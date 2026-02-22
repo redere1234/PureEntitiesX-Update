@@ -142,7 +142,7 @@ class BreedingComponent{
 		}
 	}
 
-	public function saveNBT(){
+	public function saveNBT(): CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			$this->entity->namedtag->setInt(NBTConst::NBT_KEY_AGE, $this->age, true);
 			$this->entity->namedtag->setInt(NBTConst::NBT_KEY_IN_LOVE, $this->inLove, true);

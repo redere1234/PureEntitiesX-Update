@@ -22,10 +22,15 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal;
 
 use pocketmine\entity\Effect;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\ButtonText;
 use revivalpmmp\pureentities\entity\FlyingEntity;
 use revivalpmmp\pureentities\features\IntfTameable;
@@ -40,8 +45,8 @@ abstract class FlyingAnimal extends FlyingEntity implements Animal{
 		return 0.7;
 	}
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 
 		if($this->getDataPropertyManager()->getPropertyValue(self::DATA_FLAG_BABY, 0) === null){
 			$this->setDataFlag(self::DATA_FLAG_BABY, self::DATA_TYPE_BYTE, false);

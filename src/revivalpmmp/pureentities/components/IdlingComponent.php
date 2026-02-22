@@ -235,7 +235,7 @@ class IdlingComponent{
 	/**
 	 * Stores local data to NBT
 	 */
-	public function saveNBT(){
+	public function saveNBT(): CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			$entityTag = $this->baseEntity->namedtag;
 			$idleCompound = new CompoundTag(NBTConst::NBT_KEY_IDLE_SETTINGS);

@@ -22,19 +22,33 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\flying;
 
 use pocketmine\block\Liquid;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\Stair;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\StoneSlab;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Living;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\projectile\ProjectileSource;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\event\entity\ProjectileLaunchEvent;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Location;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\sound\LaunchSound;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Math;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector2;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\Animal;
 use revivalpmmp\pureentities\entity\BaseEntity;
@@ -44,8 +58,8 @@ use revivalpmmp\pureentities\entity\projectile\SmallFireball;
 class Blaze extends FlyingMonster implements ProjectileSource{
 	const NETWORK_ID = Data::NETWORK_IDS["blaze"];
 
-	public function initEntity() : void{
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt): void{
+		parent::initEntity($nbt);
 		$this->gravity = 0.04;
 
 		$this->fireProof = true;
