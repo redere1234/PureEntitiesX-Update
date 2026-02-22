@@ -24,7 +24,7 @@ namespace revivalpmmp\pureentities\entity\monster\walking;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\components\MobEquipment;
 use revivalpmmp\pureentities\data\Data;
@@ -147,10 +147,10 @@ class Vindicator extends WalkingMonster implements IntfCanEquip, IntfCanBreed, M
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$time = $this->getLevel() !== null ? $this->getLevel()->getTime() % Level::TIME_FULL : Level::TIME_NIGHT;
+		$time = $this->getWorld() !== null ? $this->getWorld()->getTime() % World::TIME_FULL : World::TIME_NIGHT;
 		if(
 			!$this->isOnFire()
-			&& ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE)
+			&& ($time < World::TIME_NIGHT || $time > World::TIME_SUNRISE)
 		){
 			$this->setOnFire(100);
 		}

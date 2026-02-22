@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
 use revivalpmmp\pureentities\utils\MobDamageCalculator;
@@ -64,10 +64,10 @@ class Spider extends WalkingMonster{
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
-			array_push($drops, Item::get(Item::STRING, 0, mt_rand(0, 2)));
+			array_push($drops, ItemFactory::getInstance()->get(Item::STRING, 0, mt_rand(0, 2)));
 			switch(mt_rand(0, 2)){
 				case 0:
-					array_push($drops, Item::get(Item::SPIDER_EYE, 0, 1));
+					array_push($drops, ItemFactory::getInstance()->get(Item::SPIDER_EYE, 0, 1));
 					break;
 			}
 		}

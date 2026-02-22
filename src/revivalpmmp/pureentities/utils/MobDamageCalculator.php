@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\PureEntities;
 
 /**
@@ -104,7 +104,7 @@ class MobDamageCalculator{
 
 						foreach($armorItem->getEnchantments() as $enchantment){
 							if($enchantment->getId() === Enchantment::PROTECTION){
-								$enchantEpf += $enchantment->getLevel(); // see http://minecraft.gamepedia.com/Armor#Enchantments
+								$enchantEpf += $enchantment->getWorld(); // see http://minecraft.gamepedia.com/Armor#Enchantments
 							}
 						}
 					}else{

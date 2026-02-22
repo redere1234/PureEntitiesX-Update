@@ -21,13 +21,13 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity\animal;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\ButtonText;
 use revivalpmmp\pureentities\entity\animal\walking\Sheep;
 use revivalpmmp\pureentities\entity\WalkingEntity;
@@ -61,7 +61,7 @@ abstract class WalkingAnimal extends WalkingEntity implements Animal{
 			return $hasUpdate;
 		}
 
-		if($this->getLevel() !== null && !$this->hasEffect(Effect::WATER_BREATHING) && $this->isUnderwater()){
+		if($this->getWorld() !== null && !$this->hasEffect(Effect::WATER_BREATHING) && $this->isUnderwater()){
 			$hasUpdate = true;
 			$airTicks = $this->getDataPropertyManager()->getPropertyValue(self::DATA_AIR, Entity::DATA_TYPE_SHORT) - $tickDiff;
 			if($airTicks <= -20){
@@ -95,7 +95,7 @@ abstract class WalkingAnimal extends WalkingEntity implements Animal{
 	 * @return bool
 	 */
 	public function onUpdate(int $currentTick) : bool{
-		if($this->getLevel() === null) return false;
+		if($this->getWorld() === null) return false;
 		if($this->isClosed() or !$this->isAlive()){
 			return parent::onUpdate($currentTick);
 		}
@@ -129,7 +129,7 @@ abstract class WalkingAnimal extends WalkingEntity implements Animal{
 		}else{ // it's time to check for any interesting block the entity is on
 			$this->blockInterestTime = PluginConfiguration::getInstance()->getBlockOfInterestTicks();
 			$temporalVector = new Vector3($this->x, $this->y - $this->height / 2, $this->z);
-			$block = $this->level->getBlock($temporalVector);
+			$block = $this->getWorld()->getBlock($temporalVector);
 		}
 		return $block;
 	}
@@ -153,7 +153,7 @@ abstract class WalkingAnimal extends WalkingEntity implements Animal{
 
 		for($x = $minX; $x <= $maxX; $x++){
 			for($z = $minZ; $z <= $maxZ; $z++){
-				$blocksAround[] = $this->level->getBlock($temporalVector->setComponents($x, $temporalVector->y, $this->z));
+				$blocksAround[] = $this->getWorld()->getBlock($temporalVector->setComponents($x, $temporalVector->y, $this->z));
 			}
 		}
 
@@ -161,11 +161,11 @@ abstract class WalkingAnimal extends WalkingEntity implements Animal{
 	}
 
 	/**
-	 * @param Creature $creature
+	 * @param Living $creature
 	 * @param float    $distance
 	 * @return bool
 	 */
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 		$targetOption = false;
 		if($creature instanceof Player){ // a player requests the target option
 			if($creature !== null and $creature->getInventory() !== null){ // sometimes, we get null on getInventory?!
@@ -212,7 +212,7 @@ abstract class WalkingAnimal extends WalkingEntity implements Animal{
 			// without being tameable (ie. Sheep, Cows, Mooshroom, Pigs, Chicken)
 			PureEntities::logOutput("Player looking at $this");
 			PureEntities::logOutput("showButton: Item in Hand $itemInHand");
-			if($this instanceof IntfShearable and $itemInHand === Item::SHEARS and !$this->isSheared()){
+			if($this instanceof IntfShearable and $itemInHand->getTypeId() === ItemIds::SHEARS and !$this->isSheared()){
 				InteractionHelper::displayButtonText(ButtonText::SHEAR, $player);
 				PureEntities::logOutput("Button text set to Shear.");
 
@@ -242,7 +242,7 @@ abstract class WalkingAnimal extends WalkingEntity implements Animal{
 				if($hasFeedableItemsInHand){
 					InteractionHelper::displayButtonText(ButtonText::FEED, $player);
 					PureEntities::logOutput("Button text set to Feed.");
-				}else if($this instanceof Sheep and $itemInHand === Item::DYE and
+				}else if($this instanceof Sheep and $itemInHand->getTypeId() === ItemIds::DYE and
 					$player->getInventory()->getItemInHand()->getDamage() > 0
 				){
 					InteractionHelper::displayButtonText(ButtonText::DYE, $player);

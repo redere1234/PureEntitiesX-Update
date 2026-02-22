@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Color;
 use revivalpmmp\pureentities\data\Data;
@@ -128,7 +128,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->isClosed() or $this->getLevel() === null) return false;
+		if($this->isClosed() or $this->getWorld() === null) return false;
 		$this->checkFollowOwner();
 		return parent::entityBaseTick($tickDiff);
 	}
@@ -142,7 +142,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 		if(($checkSkip and $this->isCheckTargetAllowedBySkip()) or !$checkSkip){
 			if(!$this->isTamed() and !$this->getBaseTarget() instanceof Monster){
 				// is there any entity around that is attackable (skeletons, rabbits, sheep)
-				foreach($this->getLevel()->getNearbyEntities($this->boundingBox->expandedCopy(10, 10, 10), $this) as $entity){
+				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(10, 10, 10), $this) as $entity){
 					if($entity instanceof Skeleton or $entity instanceof Rabbit or $entity instanceof Sheep and
 						$entity->isAlive()
 					){
@@ -331,7 +331,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 	 */
 	public function mapOwner(){
 		if($this->ownerName !== null){
-			foreach($this->getLevel()->getPlayers() as $player){
+			foreach($this->getWorld()->getPlayers() as $player){
 				if(strcasecmp($this->ownerName, $player->getName()) === 0){
 					$this->owner = $player;
 					PureEntities::logOutput("$this: mapOwner to $player");

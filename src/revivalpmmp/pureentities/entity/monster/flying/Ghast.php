@@ -21,16 +21,16 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity\monster\flying;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\level\Location;
-use pocketmine\level\sound\LaunchSound;
+use pocketmine\world\World;
+use pocketmine\entity\Location;
+use pocketmine\world\sound\LaunchSound;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\FlyingMonster;
 use revivalpmmp\pureentities\entity\projectile\LargeFireball;
@@ -38,7 +38,7 @@ use revivalpmmp\pureentities\entity\projectile\LargeFireball;
 class Ghast extends FlyingMonster implements ProjectileSource{
 	const NETWORK_ID = Data::NETWORK_IDS["ghast"];
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	public function __construct(World $level, CompoundTag $nbt){
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		parent::__construct($level, $nbt);
@@ -55,8 +55,8 @@ class Ghast extends FlyingMonster implements ProjectileSource{
 		return "Ghast";
 	}
 
-	public function targetOption(Creature $creature, float $distance) : bool{
-		return (!($creature instanceof Player) || ($creature->isSurvival() && $creature->spawned)) && $creature->isAlive() && !$creature->isClosed() && $distance <= 10000;
+	public function targetOption(Living $creature, float $distance) : bool{
+		return (!($creature instanceof Player) || (($creature->getGamemode() === GameMode::SURVIVAL || $creature->getGamemode() === GameMode::ADVENTURE) && $creature->spawned)) && $creature->isAlive() && !$creature->isClosed() && $distance <= 10000;
 	}
 
 	public function attackEntity(Entity $player){
@@ -72,12 +72,12 @@ class Ghast extends FlyingMonster implements ProjectileSource{
 				$this->z + (cos(rad2deg($yaw)) * cos(rad2deg($pitch)) * 0.5),
 				$yaw,
 				$pitch,
-				$this->level
+				$this->getWorld()
 			);
 
 			$motion = $player->subtract($this);
 			$nbt = Entity::createBaseNBT($pos, $motion, $yaw, $pitch);
-			$fireball = new LargeFireball($this->level, $nbt, $this);
+			$fireball = new LargeFireball($this->getWorld(), $nbt, $this);
 
 			$fireball->setExplode(true);
 
@@ -87,14 +87,14 @@ class Ghast extends FlyingMonster implements ProjectileSource{
 				$fireball->kill();
 			}else{
 				$fireball->spawnToAll();
-				$this->level->addSound(new LaunchSound($this), $this->getViewers());
+				$this->getWorld()->addSound(new LaunchSound($this), $this->getViewers());
 			}
 		}
 	}
 
 	public function getDrops() : array{
 		if($this->isLootDropAllowed()){
-			return [Item::get(Item::GUNPOWDER, 0, mt_rand(0, 2))];
+			return [ItemFactory::getInstance()->get(Item::GUNPOWDER, 0, mt_rand(0, 2))];
 		}else{
 			return [];
 		}

@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use pocketmine\nbt\tag\CompoundTag;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -38,7 +38,7 @@ class MagmaCube extends JumpingMonster{
 
 	private $cubeSize = -1; // 0 = Tiny, 1 = Small, 2 = Big
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	public function __construct(World $level, CompoundTag $nbt){
 		$this->loadFromNBT($nbt);
 		if($this->cubeSize === -1){
 			$this->cubeSize = self::getRandomCubeSize();
@@ -103,10 +103,10 @@ class MagmaCube extends JumpingMonster{
 		if($this->isLootDropAllowed()){
 			switch(mt_rand(0, 1)){
 				case 0:
-					$drops[] = Item::get(Item::NETHERRACK, 0, 1);
+					$drops[] = ItemFactory::getInstance()->get(Item::NETHERRACK, 0, 1);
 					break;
 				case 1:
-					$drops[] = Item::get(Item::MAGMA_CREAM, 0, 1);
+					$drops[] = ItemFactory::getInstance()->get(Item::MAGMA_CREAM, 0, 1);
 					break;
 			}
 		}

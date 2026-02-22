@@ -71,7 +71,7 @@ class MobEquipper{
 
 			if($wearWeapon){
 				// 1/3 chance of iron sword, 2/3 iron shovel
-				$weaponItem = Item::get((mt_rand(0, 3) <= 1) ? ItemIds::IRON_SWORD : ItemIds::IRON_SHOVEL);
+				$weaponItem = ItemFactory::getInstance()->get((mt_rand(0, 3) <= 1) ? ItemIds::IRON_SWORD : ItemIds::IRON_SHOVEL);
 				$entity->getMobEquipment()->setMainHand($weaponItem);
 				PureEntities::logOutput("[MobEquipper] set $weaponItem as weapon for " . $entity);
 			}else{
@@ -116,15 +116,15 @@ class MobEquipper{
 	private static function getBoots(string $armorType) : Item{
 		switch($armorType){
 			case self::LEATHER:
-				return Item::get(ItemIds::LEATHER_BOOTS);
+				return ItemFactory::getInstance()->get(ItemIds::LEATHER_BOOTS);
 			case self::IRON:
-				return Item::get(ItemIds::IRON_BOOTS);
+				return ItemFactory::getInstance()->get(ItemIds::IRON_BOOTS);
 			case self::GOLD:
-				return Item::get(ItemIds::GOLD_BOOTS);
+				return ItemFactory::getInstance()->get(ItemIds::GOLD_BOOTS);
 			case self::DIAMOND:
-				return Item::get(ItemIds::DIAMOND_BOOTS);
+				return ItemFactory::getInstance()->get(ItemIds::DIAMOND_BOOTS);
 		}
-		return Item::get(ItemIds::AIR);
+		return ItemFactory::getInstance()->get(ItemIds::AIR);
 	}
 
 	/**
@@ -136,15 +136,15 @@ class MobEquipper{
 	private static function getChestplate(string $armorType) : Item{
 		switch($armorType){
 			case self::LEATHER:
-				return Item::get(ItemIds::LEATHER_TUNIC);
+				return ItemFactory::getInstance()->get(ItemIds::LEATHER_TUNIC);
 			case self::IRON:
-				return Item::get(ItemIds::IRON_CHESTPLATE);
+				return ItemFactory::getInstance()->get(ItemIds::IRON_CHESTPLATE);
 			case self::GOLD:
-				return Item::get(ItemIds::GOLD_CHESTPLATE);
+				return ItemFactory::getInstance()->get(ItemIds::GOLD_CHESTPLATE);
 			case self::DIAMOND:
-				return Item::get(ItemIds::DIAMOND_CHESTPLATE);
+				return ItemFactory::getInstance()->get(ItemIds::DIAMOND_CHESTPLATE);
 		}
-		return Item::get(ItemIds::AIR);
+		return ItemFactory::getInstance()->get(ItemIds::AIR);
 	}
 
 	/**
@@ -156,15 +156,15 @@ class MobEquipper{
 	private static function getHelmet(string $armorType) : Item{
 		switch($armorType){
 			case self::LEATHER:
-				return Item::get(ItemIds::LEATHER_CAP);
+				return ItemFactory::getInstance()->get(ItemIds::LEATHER_CAP);
 			case self::IRON:
-				return Item::get(ItemIds::IRON_HELMET);
+				return ItemFactory::getInstance()->get(ItemIds::IRON_HELMET);
 			case self::GOLD:
-				return Item::get(ItemIds::GOLD_HELMET);
+				return ItemFactory::getInstance()->get(ItemIds::GOLD_HELMET);
 			case self::DIAMOND:
-				return Item::get(ItemIds::DIAMOND_HELMET);
+				return ItemFactory::getInstance()->get(ItemIds::DIAMOND_HELMET);
 		}
-		return Item::get(ItemIds::AIR);
+		return ItemFactory::getInstance()->get(ItemIds::AIR);
 	}
 
 	/**
@@ -176,15 +176,15 @@ class MobEquipper{
 	private static function getLeggings(string $armorType) : Item{
 		switch($armorType){
 			case self::LEATHER:
-				return Item::get(ItemIds::LEATHER_PANTS);
+				return ItemFactory::getInstance()->get(ItemIds::LEATHER_PANTS);
 			case self::IRON:
-				return Item::get(ItemIds::IRON_LEGGINGS);
+				return ItemFactory::getInstance()->get(ItemIds::IRON_LEGGINGS);
 			case self::GOLD:
-				return Item::get(ItemIds::GOLD_LEGGINGS);
+				return ItemFactory::getInstance()->get(ItemIds::GOLD_LEGGINGS);
 			case self::DIAMOND:
-				return Item::get(ItemIds::DIAMOND_LEGGINGS);
+				return ItemFactory::getInstance()->get(ItemIds::DIAMOND_LEGGINGS);
 		}
-		return Item::get(ItemIds::AIR);
+		return ItemFactory::getInstance()->get(ItemIds::AIR);
 	}
 
 	/**

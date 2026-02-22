@@ -5,9 +5,9 @@ namespace revivalpmmp\pureentities\commands;
 
 
 use pocketmine\command\CommandSender;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
-use pocketmine\Player;
+use pocketmine\world\World;
+use pocketmine\world\Position;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use revivalpmmp\pureentities\entity\BaseEntity;
@@ -31,7 +31,7 @@ class SummonCommand extends PureEntitiesXCommand{
 			return;
 		}
 		$className = PureEntities::getInstance()->getRegisteredClassNameFromShortName($args[0]);
-		$level = Server::getInstance()->getLevelByName($args[4]);
+		$level = Server::getInstance()->getWorldManager()->getWorldByName($args[4]);
 		$pos = new Position((float) $args[1], (float) $args[2], (float) $args[3], $level);
 		$mob = PureEntities::getInstance()->scheduleCreatureSpawn($pos, $className::NETWORK_ID, $level, "");
 		if($mob instanceof BaseEntity){
@@ -67,13 +67,13 @@ class SummonCommand extends PureEntitiesXCommand{
 		}
 		if(isset($args[4])){
 			Server::getInstance()->loadLevel($args[4]);
-			if(!Server::getInstance()->getLevelByName($args[4]) instanceof Level){
+			if(!Server::getInstance()->getWorldManager()->getWorldByName($args[4]) instanceof World){
 				$sender->sendMessage(TextFormat::GOLD . $args[4] . TextFormat::RED . " is not a valid world.");
 				$valid = false;
 			}
 		}else{
 			/** @var $sender Player */
-			$args[4] = $sender->getLevel()->getName();
+			$args[4] = $sender->getWorld()->getName();
 		}
 
 		if(!$valid){

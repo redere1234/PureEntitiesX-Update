@@ -21,13 +21,13 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
 use revivalpmmp\pureentities\utils\MobDamageCalculator;
@@ -68,7 +68,7 @@ class IronGolem extends WalkingMonster{
 		}
 	}
 
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 		if(!($creature instanceof Player)){
 			return $creature->isAlive() && $distance <= 60;
 		}
@@ -78,8 +78,8 @@ class IronGolem extends WalkingMonster{
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
-			array_push($drops, Item::get(Item::IRON_INGOT, 0, mt_rand(3, 5)));
-			array_push($drops, Item::get(Item::POPPY, 0, mt_rand(0, 2)));
+			array_push($drops, ItemFactory::getInstance()->get(Item::IRON_INGOT, 0, mt_rand(3, 5)));
+			array_push($drops, ItemFactory::getInstance()->get(Item::POPPY, 0, mt_rand(0, 2)));
 		}
 		return $drops;
 	}

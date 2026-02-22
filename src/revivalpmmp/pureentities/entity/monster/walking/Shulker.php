@@ -64,7 +64,7 @@ class Shulker extends WalkingMonster implements Monster{
 		if($this->isLootDropAllowed()){
 			switch(mt_rand(0, 1)){
 				case 0:
-					array_push($drops, Item::get(Item::SHULKER_SHELL, 0, 1));
+					array_push($drops, ItemFactory::getInstance()->get(Item::SHULKER_SHELL, 0, 1));
 					break;
 			}
 		}

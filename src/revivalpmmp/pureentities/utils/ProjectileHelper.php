@@ -7,8 +7,8 @@ namespace revivalpmmp\pureentities\utils;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\level\Position;
-use pocketmine\level\sound\LaunchSound;
+use pocketmine\world\Position;
+use pocketmine\world\sound\LaunchSound;
 use pocketmine\math\Vector3;
 
 class ProjectileHelper{
@@ -16,7 +16,7 @@ class ProjectileHelper{
 	public static function createProjectile(int $type, Position $startingPoint, Vector3 $target) : Projectile{
 		$motion = $target->subtract($startingPoint);
 		$nbt = Entity::createBaseNBT($startingPoint, $motion, self::getYawForProjectile($startingPoint, $target), self::getPitchForProjectile($startingPoint, $target));
-		$projectile = Entity::createEntity($type, $startingPoint->getLevel(), $nbt);
+		$projectile = EntityFactory::getInstance()->create($type, $startingPoint->getWorld(), $nbt);
 		if(!$projectile instanceof Projectile){
 			throw new \InvalidArgumentException("Invalid type of $type passed to ProjectileHelper::createProjectile()!");
 		}

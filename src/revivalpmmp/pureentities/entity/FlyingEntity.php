@@ -21,11 +21,11 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\math\Math;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\entity\animal\Animal;
 use revivalpmmp\pureentities\entity\monster\flying\Blaze;
 
@@ -38,10 +38,10 @@ abstract class FlyingEntity extends BaseEntity{
 			}
 
 			$target = $this->getBaseTarget();
-			if(!($target instanceof Creature) or !$this->targetOption($target, $this->distanceSquared($target))){
+			if(!($target instanceof Living) or !$this->targetOption($target, $this->distanceSquared($target))){
 				$near = PHP_INT_MAX;
-				foreach($this->getLevel()->getEntities() as $creature){
-					if($creature === $this || !($creature instanceof Creature) || $creature instanceof Animal){
+				foreach($this->getWorld()->getEntities() as $creature){
+					if($creature === $this || !($creature instanceof Living) || $creature instanceof Animal){
 						continue;
 					}
 
@@ -58,11 +58,11 @@ abstract class FlyingEntity extends BaseEntity{
 				}
 			}
 
-			if($this->getBaseTarget() instanceof Creature && $this->getBaseTarget()->isAlive()){
+			if($this->getBaseTarget() instanceof Living && $this->getBaseTarget()->isAlive()){
 				return;
 			}
 
-			$maxY = max($this->getLevel()->getHighestBlockAt((int) $this->x, (int) $this->z) + 15, 120);
+			$maxY = max($this->getWorld()->getHighestBlockAt((int) $this->x, (int) $this->z) + 15, 120);
 			if($this->moveTime <= 0 or !$this->getBaseTarget() instanceof Vector3){
 				$x = mt_rand(20, 100);
 				$z = mt_rand(20, 100);
@@ -130,8 +130,8 @@ abstract class FlyingEntity extends BaseEntity{
 				}
 
 				$vec = new Vector3(Math::floorFloat($be->x) + $x, $this->y, Math::floorFloat($be->y) + $z);
-				$block = $this->level->getBlock($vec->add($x, 0, $z));
-				$block2 = $this->level->getBlock($vec->add($x, 1, $z));
+				$block = $this->getWorld()->getBlock($vec->add($x, 0, $z));
+				$block2 = $this->getWorld()->getBlock($vec->add($x, 1, $z));
 				if(!$block->canPassThrough()){
 					$bb = $block2->getBoundingBox();
 					if(

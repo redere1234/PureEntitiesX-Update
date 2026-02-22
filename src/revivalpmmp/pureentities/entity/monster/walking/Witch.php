@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\Monster;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -120,10 +120,10 @@ class Witch extends WalkingMonster implements Monster{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$time = $this->getLevel() !== null ? $this->getLevel()->getTime() % Level::TIME_FULL : Level::TIME_NIGHT;
+		$time = $this->getWorld() !== null ? $this->getWorld()->getTime() % World::TIME_FULL : World::TIME_NIGHT;
 		if(
 			!$this->isOnFire()
-			&& ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE)
+			&& ($time < World::TIME_NIGHT || $time > World::TIME_SUNRISE)
 		){
 			$this->setOnFire(100);
 		}
@@ -138,25 +138,25 @@ class Witch extends WalkingMonster implements Monster{
 			if(mt_rand(1, 1000) % 25 === 0){
 				switch(mt_rand(1, 3)){
 					case 1:
-						array_push($drops, Item::get(Item::GLASS_BOTTLE, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::GLASS_BOTTLE, 0, 1));
 						break;
 					case 2:
-						array_push($drops, Item::get(Item::GLOWSTONE_DUST, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::GLOWSTONE_DUST, 0, 1));
 						break;
 					case 3:
-						array_push($drops, Item::get(Item::GUNPOWDER, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::GUNPOWDER, 0, 1));
 						break;
 					case 4:
-						array_push($drops, Item::get(Item::REDSTONE, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::REDSTONE, 0, 1));
 						break;
 					case 5:
-						array_push($drops, Item::get(Item::SPIDER_EYE, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::SPIDER_EYE, 0, 1));
 						break;
 					case 6:
-						array_push($drops, Item::get(Item::SUGAR, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::SUGAR, 0, 1));
 						break;
 					case 7:
-						array_push($drops, Item::get(Item::STICK, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::STICK, 0, 1));
 						break;
 				}
 			}

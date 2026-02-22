@@ -21,14 +21,14 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity\monster\jumping;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\monster\JumpingMonster;
@@ -40,7 +40,7 @@ class Slime extends JumpingMonster{
 
 	private $cubeSize = -1; // 0 = Tiny, 1 = Small, 2 = Big
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	public function __construct(World $level, CompoundTag $nbt){
 		$this->loadFromNBT($nbt);
 		if($this->cubeSize === -1){
 			$this->cubeSize = self::getRandomSlimeSize();
@@ -101,7 +101,7 @@ class Slime extends JumpingMonster{
 		}
 	}
 
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 		if($creature instanceof Player){
 			return $creature->isAlive() && $distance <= 25;
 		}
@@ -110,7 +110,7 @@ class Slime extends JumpingMonster{
 
 	public function getDrops() : array{
 		if($this->isLootDropAllowed() and $this->cubeSize === 0){
-			return [Item::get(Item::SLIMEBALL, 0, mt_rand(0, 2))];
+			return [ItemFactory::getInstance()->get(Item::SLIMEBALL, 0, mt_rand(0, 2))];
 		}else{
 			return [];
 		}

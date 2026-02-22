@@ -25,7 +25,7 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\ButtonText;
 use revivalpmmp\pureentities\entity\FlyingEntity;
 use revivalpmmp\pureentities\features\IntfTameable;
@@ -82,7 +82,7 @@ abstract class FlyingAnimal extends FlyingEntity implements Animal{
 	}
 
 	public function onUpdate(int $currentTick) : bool{
-		if($this->getLevel() === null) return false;
+		if($this->getWorld() === null) return false;
 		if($this->isClosed() or !$this->isAlive()){
 			return parent::onUpdate($currentTick);
 		}

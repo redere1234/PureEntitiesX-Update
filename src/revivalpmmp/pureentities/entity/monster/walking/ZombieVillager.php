@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\Monster;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -65,7 +65,7 @@ class ZombieVillager extends WalkingMonster implements Monster{
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->isClosed() or $this->getLevel() === null) return false;
+		if($this->isClosed() or $this->getWorld() === null) return false;
 		// Timings::$timerEntityBaseTick->startTiming();
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
@@ -76,10 +76,10 @@ class ZombieVillager extends WalkingMonster implements Monster{
 			// Timings::$timerEntityBaseTick->stopTiming();
 			return false;
 		}
-		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
+		$time = $this->getWorld()->getTime() % World::TIME_FULL;
 		if(
 			!$this->isOnFire()
-			&& ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE)
+			&& ($time < World::TIME_NIGHT || $time > World::TIME_SUNRISE)
 		){
 			$this->setOnFire(100);
 		}
@@ -91,18 +91,18 @@ class ZombieVillager extends WalkingMonster implements Monster{
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
-			array_push($drops, Item::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2)));
+			array_push($drops, ItemFactory::getInstance()->get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2)));
 			// 2.5 percent chance of dropping one of these items.
 			if(mt_rand(1, 1000) % 25 === 0){
 				switch(mt_rand(1, 3)){
 					case 1:
-						array_push($drops, Item::get(Item::CARROT, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::CARROT, 0, 1));
 						break;
 					case 2:
-						array_push($drops, Item::get(Item::POTATO, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::POTATO, 0, 1));
 						break;
 					case 3:
-						array_push($drops, Item::get(Item::IRON_INGOT, 0, 1));
+						array_push($drops, ItemFactory::getInstance()->get(Item::IRON_INGOT, 0, 1));
 						break;
 				}
 			}

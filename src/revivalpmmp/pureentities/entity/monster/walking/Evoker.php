@@ -24,7 +24,7 @@ namespace revivalpmmp\pureentities\entity\monster\walking;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\Monster;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -67,7 +67,7 @@ class Evoker extends WalkingMonster implements Monster{
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->isClosed() or $this->getLevel() === null) return false;
+		if($this->isClosed() or $this->getWorld() === null) return false;
 		// Timings::$timerEntityBaseTick->startTiming();
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
@@ -78,10 +78,10 @@ class Evoker extends WalkingMonster implements Monster{
 			// Timings::$timerEntityBaseTick->stopTiming();
 			return false;
 		}
-		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
+		$time = $this->getWorld()->getTime() % World::TIME_FULL;
 		if(
 			!$this->isOnFire()
-			&& ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE)
+			&& ($time < World::TIME_NIGHT || $time > World::TIME_SUNRISE)
 		){
 			$this->setOnFire(100);
 		}

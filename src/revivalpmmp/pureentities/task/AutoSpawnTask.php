@@ -21,10 +21,10 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\task;
 
 use pocketmine\block\Block;
-use pocketmine\level\biome\Biome;
-use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
+use pocketmine\world\biome\Biome;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
+use pocketmine\world\Position;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
@@ -61,7 +61,7 @@ class AutoSpawnTask extends Task{
 		PureEntities::logOutput("AutoSpawnTask: onRun ($currentTick)");
 		PeTimings::startTiming("AutoSpawnTask");
 
-		foreach($this->plugin->getServer()->getLevels() as $level){
+		foreach($this->plugin->getServer()->getWorldManager()->getWorlds() as $level){
 			if(count($this->spawnerWorlds) > 0 and !in_array($level->getName(), $this->spawnerWorlds)){
 				continue;
 			}
@@ -156,12 +156,12 @@ class AutoSpawnTask extends Task{
 			 */
 			foreach($playerLocations as $playerPos){
 
-				$chunkHash = Level::chunkHash($playerPos->x >> 4, $playerPos->z >> 4);
+				$chunkHash = World::chunkHash($playerPos->x >> 4, $playerPos->z >> 4);
 
 
 				// If the chunk is already in the list, there's no need to add it again.
 				if(!isset($convertedChunkList[$chunkHash])){
-					$convertedChunkList[$chunkHash] = $playerPos->getLevel()->getChunk($playerPos->x >> 4, $playerPos->z >> 4);
+					$convertedChunkList[$chunkHash] = $playerPos->getWorld()->getChunk($playerPos->x >> 4, $playerPos->z >> 4);
 					PureEntities::logOutput("AutoSpawnTask: Chunk added to convertedChunkList.");
 				}
 			}
@@ -179,9 +179,9 @@ class AutoSpawnTask extends Task{
 						$trialX = $chunk->getX() + $x;
 						$trialZ = $chunk->getZ() + $z;
 						PureEntities::logOutput("AutoSpawnTask: Testing Chunk X: $trialX, Z: $trialZ.");
-						$trialChunk = Level::chunkHash($trialX, $trialZ);
+						$trialChunk = World::chunkHash($trialX, $trialZ);
 						if(!isset($spawnMap[$trialChunk])){
-							$spawnMap[$trialChunk] = $playerPos->getLevel()->getChunk($trialX, $trialZ);
+							$spawnMap[$trialChunk] = $playerPos->getWorld()->getChunk($trialX, $trialZ);
 							PureEntities::logOutput("AutoSpawnTask: Chunk added to Spawn Map.");
 						}
 					}
@@ -206,7 +206,7 @@ class AutoSpawnTask extends Task{
 		return new Vector3($x, $y, $z);
 	}
 
-	private function isValidPackCenter(Vector3 $center, Level $level) : bool{
+	private function isValidPackCenter(Vector3 $center, World $level) : bool{
 		if($level->getBlockAt($center->x, $center->y, $center->z)->isTransparent()){
 			return true;
 		}else{
@@ -214,7 +214,7 @@ class AutoSpawnTask extends Task{
 		}
 	}
 
-	protected function spawnPackToLevel(Vector3 $center, int $entityId, Level $level, string $type, bool $isBaby = false){
+	protected function spawnPackToLevel(Vector3 $center, int $entityId, World $level, string $type, bool $isBaby = false){
 
 		// TODO Update to change $maxPackSize based on Mob
 		$maxPackSize = 4;
@@ -264,9 +264,9 @@ class AutoSpawnTask extends Task{
 	 * This finds a random location in the chunk to act as a pack spawn center
 	 * then attempts to spawn a pack based on passive mob conditions.
 	 * @param Chunk $chunk
-	 * @param Level $level
+	 * @param World $level
 	 */
-	private function spawnPassiveMob(Chunk $chunk, Level $level){
+	private function spawnPassiveMob(Chunk $chunk, World $level){
 		PureEntities::logOutput("AutoSpawnTask: Attempting to spawn passive mob.");
 		$packCenter = $this->getRandomLocationInChunk(new Vector2($chunk->getX(), $chunk->getZ()));
 		$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
@@ -278,7 +278,7 @@ class AutoSpawnTask extends Task{
 
 	}
 
-	private function spawnHostileMob(Chunk $chunk, Level $level){
+	private function spawnHostileMob(Chunk $chunk, World $level){
 		PureEntities::logOutput("AutoSpawnTask: Attempting to spawn hostile mob.");
 		$packCenter = $this->getRandomLocationInChunk(new Vector2($chunk->getX(), $chunk->getZ()));
 		PureEntities::logOutput("AutoSpawnTask: Chosen Pack Center at $packCenter->x, $packCenter->y, $packCenter->z.");

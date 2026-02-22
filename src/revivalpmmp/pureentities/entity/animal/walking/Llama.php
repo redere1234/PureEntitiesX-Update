@@ -21,10 +21,10 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Rideable;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
 
@@ -43,16 +43,16 @@ class Llama extends WalkingAnimal implements Rideable{
 		return "Llama";
 	}
 
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 		if($creature instanceof Player){
-			return $creature->spawned && $creature->isAlive() && !$creature->isClosed() && $creature->getInventory()->getItemInHand()->getId() === Item::APPLE && $distance <= 49;
+			return $creature->spawned && $creature->isAlive() && !$creature->isClosed() && $creature->getInventory()->getItemInHand()->getTypeId() === ItemIds::APPLE && $distance <= 49;
 		}
 		return false;
 	}
 
 	public function getDrops() : array{
 		if($this->isLootDropAllowed()){
-			return [Item::get(Item::LEATHER, 0, mt_rand(0, 2))];
+			return [ItemFactory::getInstance()->get(Item::LEATHER, 0, mt_rand(0, 2))];
 		}else{
 			return [];
 		}

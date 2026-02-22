@@ -31,8 +31,9 @@ namespace revivalpmmp\pureentities\block;
 use pocketmine\block\Block;
 use pocketmine\block\MonsterSpawner;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\tile\Tile;
 use revivalpmmp\pureentities\tile\MobSpawner;
 
@@ -58,7 +59,7 @@ class MonsterSpawnerPEX extends MonsterSpawner{
 	 * @return bool
 	 */
 	public function onActivate(Item $item, Player $player = null) : bool{
-		if($item->getId() !== Item::SPAWN_EGG){
+		if($item->getTypeId() !== ItemIds::SPAWN_EGG){
 			return false;
 		}
 		$this->entityId = $item->getDamage();
@@ -86,7 +87,7 @@ class MonsterSpawnerPEX extends MonsterSpawner{
 		if($item->getDamage() > 9){
 			$this->meta = 0;
 			$this->entityId = $item->getDamage();
-			$this->getLevel()->setBlock($this, $this, true, false);
+			$this->getWorld()->setBlock($this, $this, true, false);
 			$this->generateSpawnerTile();
 		}
 
@@ -99,13 +100,13 @@ class MonsterSpawnerPEX extends MonsterSpawner{
 	 * If not there, it creates one, then updates the EntityId.
 	 */
 	private function generateSpawnerTile(){
-		$tile = $this->getLevel()->getTile($this);
+		$tile = $this->getWorld()->getTile($this);
 		if(!$tile instanceof MobSpawner){
 			$nbt = MobSpawner::createNBT($this);
 			$nbt->setString(Tile::TAG_ID, Tile::MOB_SPAWNER);
 
 			/** @var MobSpawner $spawnerTile */
-			$tile = Tile::createTile("MobSpawner", $this->getLevel(), $nbt);
+			$tile = Tile::createTile("MobSpawner", $this->getWorld(), $nbt);
 		}
 		$tile->setSpawnEntityType($this->entityId);
 	}
@@ -124,7 +125,7 @@ class MonsterSpawnerPEX extends MonsterSpawner{
 
 	public function onBreak(Item $item, Player $player = null) : bool{
 		parent::onBreak($item, $player);
-		$tile = $this->level->getTile($this);
+		$tile = $this->getWorld()->getTile($this);
 		if($tile instanceof MobSpawner){
 			$tile->close();
 		}

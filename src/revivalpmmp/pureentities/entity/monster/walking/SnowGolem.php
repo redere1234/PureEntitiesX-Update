@@ -27,12 +27,12 @@ use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
-use pocketmine\level\sound\LaunchSound;
+use pocketmine\world\sound\LaunchSound;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\ButtonText;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -89,7 +89,7 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
 			]);
 
 			/** @var Projectile $snowball */
-			$snowball = Entity::createEntity("Snowball", $this->getLevel(), $nbt, $this);
+			$snowball = EntityFactory::getInstance()->create("Snowball", $this->getWorld(), $nbt, $this);
 			$snowball->setMotion($snowball->getMotion()->multiply($f));
 
 			$this->server->getPluginManager()->callEvent($launch = new ProjectileLaunchEvent($snowball));
@@ -97,7 +97,7 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
 				$snowball->kill();
 			}else{
 				$snowball->spawnToAll();
-				$this->level->addSound(new LaunchSound($this), $this->getViewers());
+				$this->getWorld()->addSound(new LaunchSound($this), $this->getViewers());
 			}
 
 			$this->checkTamedMobsAttack($player);
@@ -106,7 +106,7 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
 
 	public function getDrops() : array{
 		if($this->isLootDropAllowed()){
-			return [Item::get(Item::SNOWBALL, 0, mt_rand(0, 15))];
+			return [ItemFactory::getInstance()->get(Item::SNOWBALL, 0, mt_rand(0, 15))];
 		}else{
 			return [];
 		}

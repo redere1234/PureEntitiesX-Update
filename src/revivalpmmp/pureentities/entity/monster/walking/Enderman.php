@@ -22,12 +22,12 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
 use pocketmine\block\Pumpkin;
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
 use revivalpmmp\pureentities\utils\MobDamageCalculator;
@@ -65,12 +65,12 @@ class Enderman extends WalkingMonster{
 
 	public function getDrops() : array{
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
-			return [Item::get(368, 0, 1)];
+			return [ItemFactory::getInstance()->get(368, 0, 1)];
 		}
 		return [];
 	}
 
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 		// enderman don't attack alone. they only attack when looked at
 		return false;
 	}

@@ -23,14 +23,14 @@ namespace revivalpmmp\pureentities\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\Liquid;
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\math\Math;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\entity\animal\Animal;
 use revivalpmmp\pureentities\entity\monster\walking\PigZombie;
 use revivalpmmp\pureentities\features\IntfCanEquip;
@@ -50,10 +50,10 @@ abstract class WalkingEntity extends BaseEntity{
 			}
 
 			$target = $this->getBaseTarget();
-			if(!$target instanceof Creature or !$this->targetOption($target, $this->distanceSquared($target))){
+			if(!$target instanceof Living or !$this->targetOption($target, $this->distanceSquared($target))){
 				$near = PHP_INT_MAX;
-				foreach($this->getLevel()->getEntities() as $creature){
-					if($creature === $this || !($creature instanceof Creature) || $creature instanceof Animal){
+				foreach($this->getWorld()->getEntities() as $creature){
+					if($creature === $this || !($creature instanceof Living) || $creature instanceof Animal){
 						continue;
 					}
 
@@ -81,7 +81,7 @@ abstract class WalkingEntity extends BaseEntity{
 				}
 			}
 
-			if($this->getBaseTarget() instanceof Creature && $this->getBaseTarget()->isAlive()){
+			if($this->getBaseTarget() instanceof Living && $this->getBaseTarget()->isAlive()){
 				PeTimings::stopTiming("WalkingAnimal: checkTarget()", true);
 				return;
 			}
@@ -90,11 +90,11 @@ abstract class WalkingEntity extends BaseEntity{
 				if(!$this->idlingComponent->checkAndSetIdling()){
 					$maxAttempts = 12;
 					for($attempts = 0; $attempts <= $maxAttempts; $attempts++){
-						$locationBlock = $this->getLevel()->getBlock($this->findRandomLocation());
+						$locationBlock = $this->getWorld()->getBlock($this->findRandomLocation());
 						$locationBlockID = $locationBlock->getId();
-						$underFirstBlock = $this->getLevel()->getBlock($locationBlock->subtract(0, 1));
-						$underFirstBlockID = $this->getLevel()->getBlock($locationBlock->subtract(0, 1))->getId();
-						$underSecondBlock = $this->getLevel()->getBlock($locationBlock->subtract(0, 2));
+						$underFirstBlock = $this->getWorld()->getBlock($locationBlock->subtract(0, 1));
+						$underFirstBlockID = $this->getWorld()->getBlock($locationBlock->subtract(0, 1))->getId();
+						$underSecondBlock = $this->getWorld()->getBlock($locationBlock->subtract(0, 2));
 						$underFirstBlockBox = $underFirstBlock->getCollisionBoxes()[0] ?? null;
 						$underFirstBlockBoxmaxY = $underFirstBlockBox === null ? 0 : $underFirstBlockBox->maxY;
 						$underSecondBlockBox = $underSecondBlock->getCollisionBoxes()[0] ?? null;
@@ -130,7 +130,7 @@ abstract class WalkingEntity extends BaseEntity{
 	 * @return null|Vector3
 	 */
 	public function updateMove($tickDiff){
-		if($this->isClosed() or $this->getLevel() === null or !$this->isMovement()){
+		if($this->isClosed() or $this->getWorld() === null or !$this->isMovement()){
 			return null;
 		}
 
@@ -148,7 +148,7 @@ abstract class WalkingEntity extends BaseEntity{
 
 		$before = $this->getBaseTarget();
 		$this->checkTarget();
-		if($this->getBaseTarget() instanceof Creature or $this->getBaseTarget() instanceof Block or $before !== $this->getBaseTarget() and
+		if($this->getBaseTarget() instanceof Living or $this->getBaseTarget() instanceof Block or $before !== $this->getBaseTarget() and
 			$this->getBaseTarget() !== null
 		){
 			$x = $this->getBaseTarget()->x - $this->x;
@@ -199,7 +199,7 @@ abstract class WalkingEntity extends BaseEntity{
 			$this->stayTime -= $tickDiff;
 			$this->move(0, $this->motion->y * $tickDiff, 0);
 		}//I cannot jump, so am i collided and cannot jump ? (Without target creature, and on ground)
-		elseif($this->isCollidedHorizontally && !$isJump && !$this->getBaseTarget() instanceof Creature && $before === $this->getBaseTarget() && $this->isOnGround()){
+		elseif($this->isCollidedHorizontally && !$isJump && !$this->getBaseTarget() instanceof Living && $before === $this->getBaseTarget() && $this->isOnGround()){
 			$this->move(0, $this->motion->y * $tickDiff, 0);
 			// $this->yaw = $this->getYaw() + mt_rand(-120, 120);
 			$this->motion->x = 0;
@@ -223,7 +223,7 @@ abstract class WalkingEntity extends BaseEntity{
 			if($this->isOnGround()){
 				$this->motion->y = 0;
 			}else if($this->motion->y > -$this->gravity * 4){
-				if(!($this->getLevel()->getBlock(new Vector3(Math::floorFloat($this->x), (int) ($this->y + 0.8), Math::floorFloat($this->z))) instanceof Liquid)){
+				if(!($this->getWorld()->getBlock(new Vector3(Math::floorFloat($this->x), (int) ($this->y + 0.8), Math::floorFloat($this->z))) instanceof Liquid)){
 					$this->motion->y -= $this->gravity * 1;
 				}
 			}else{
@@ -233,7 +233,7 @@ abstract class WalkingEntity extends BaseEntity{
 			//Handle jumping entity
 			if($this->jumper && (abs($this->motion->x) + abs($this->motion->z)) > 0.05 && $this->motion->y === 0){
 				$this->jump();
-				foreach($this->getLevel()->getPlayers() as $player){ // don't know if this is the correct one :/
+				foreach($this->getWorld()->getPlayers() as $player){ // don't know if this is the correct one :/
 					if($player->distance($this) <= 49){
 						$pk = new ActorEventPacket();
 						$pk->entityRuntimeId = $this->getId();
@@ -257,12 +257,12 @@ abstract class WalkingEntity extends BaseEntity{
 	 * @return bool
 	 */
 	protected function checkJump($dx, $dz){
-		PureEntities::logOutput("$this: entering checkJump [dx:$dx] [dz:$dz] - level: " . $this->getLevel()->getName());
+		PureEntities::logOutput("$this: entering checkJump [dx:$dx] [dz:$dz] - level: " . $this->getWorld()->getName());
 		if($this->motion->y === $this->gravity * 2){ // swimming
 			PureEntities::logOutput("$this: checkJump(): motionY === gravity*2");
-			return $this->getLevel()->getBlock(new Vector3(Math::floorFloat($this->x), (int) $this->y, Math::floorFloat($this->z))) instanceof Liquid;
+			return $this->getWorld()->getBlock(new Vector3(Math::floorFloat($this->x), (int) $this->y, Math::floorFloat($this->z))) instanceof Liquid;
 		}else{ // dive up?
-			if($this->getLevel()->getBlock(new Vector3(Math::floorFloat($this->x), (int) ($this->y + 0.8), Math::floorFloat($this->z))) instanceof Liquid){
+			if($this->getWorld()->getBlock(new Vector3(Math::floorFloat($this->x), (int) ($this->y + 0.8), Math::floorFloat($this->z))) instanceof Liquid){
 				PureEntities::logOutput("$this: checkJump(): instanceof liquid");
 				$this->motion->y = $this->gravity * 2; // set swimming (rather walking on water ;))
 				return true;
@@ -281,7 +281,7 @@ abstract class WalkingEntity extends BaseEntity{
 
 		PureEntities::logOutput("$this: checkJump(): position is [x:" . $this->x . "] [y:" . $this->y . "] [z:" . $this->z . "]");
 		//Is there anything upper ? If yes, i cannot jump ...
-		$entityUpperBlock = $this->getLevel()->getBlock(new Vector3(Math::floorFloat($this->x), Math::floorFloat($this->y + $this->height) + 1, Math::floorFloat($this->z)));
+		$entityUpperBlock = $this->getWorld()->getBlock(new Vector3(Math::floorFloat($this->x), Math::floorFloat($this->y + $this->height) + 1, Math::floorFloat($this->z)));
 		if(!empty($entityUpperBlock->getCollisionBoxes())){
 			PureEntities::logOutput("$this: checkJump(): There is block upper the entity: $entityUpperBlock");
 			return false;
@@ -290,7 +290,7 @@ abstract class WalkingEntity extends BaseEntity{
 		//I'm in collision with these block, so if the hightest can be passed, jump, else, look if one of these can be passed, and go to him
 		$highestBlock = 0;
 		$lowestBlock = null;
-		foreach($this->level->getCollisionBlocks($this->boundingBox->addCoord($this->motion->x, $this->motion->y, $this->motion->z)) as $_ => $block){
+		foreach($this->getWorld()->getCollisionBlocks($this->boundingBox->addCoord($this->motion->x, $this->motion->y, $this->motion->z)) as $_ => $block){
 
 			$blockBox = $block->getCollisionBoxes()[0] ?? null;
 			$blockBoxDiff = $blockBox === null ? 0 : $blockBox->maxY - $blockBox->minY;
@@ -302,7 +302,7 @@ abstract class WalkingEntity extends BaseEntity{
 			//Do the same for the upper block, id there is any collisionBox, consider as a block
 			//If i jump and have 2 slab or stair, so i cannot jump over these 2
 			PureEntities::logOutput("$this: CollisionBlock : $block --Height: $blockBoxDiff-- Pos: [x:" . $block->x . "] [y:" . $block->y . "] [z:" . $block->z . "]");
-			$upperblock = $this->getLevel()->getBlock($block->add(0, 1, 0));
+			$upperblock = $this->getWorld()->getBlock($block->add(0, 1, 0));
 			if(!empty($upperblock->getCollisionBoxes())){
 				$blockBoxDiff = $blockBoxDiff + 1;
 				PureEntities::logOutput("$this: CollisionBlock - upperBlock Detected - New Height($blockBoxDiff) : $upperblock - Pos: [x:" . $upperblock->x . "] [y:" . $upperblock->y . "] [z:" . $upperblock->z . "]");
@@ -369,18 +369,18 @@ abstract class WalkingEntity extends BaseEntity{
 	 * @return float|int
 	 */
 	public function findTargetFloor($x, $z){
-		if($this->level->getBlock(new Vector3($x, $this->y, $z))->getId() === Block::AIR){
+		if($this->getWorld()->getBlock(new Vector3($x, $this->y, $z))->getId() === Block::AIR){
 			return $this->y;
 		}
 		//Check from current y up for air.
 		for($yScan = 1; $yScan < 3; $yScan++){
-			if($this->level->getBlock(new Vector3($x, $this->y + $yScan, $z))->getId() === Block::AIR){
+			if($this->getWorld()->getBlock(new Vector3($x, $this->y + $yScan, $z))->getId() === Block::AIR){
 				return $this->y + $yScan;
 			}
 		}
 
 		for($yScan = -1; $yScan > -3; $yScan--){
-			if($this->level->getBlock(new Vector3($x, $this->y + $yScan, $z))->getId() === Block::AIR){
+			if($this->getWorld()->getBlock(new Vector3($x, $this->y + $yScan, $z))->getId() === Block::AIR){
 				return $this->y + $yScan;
 			}
 		}

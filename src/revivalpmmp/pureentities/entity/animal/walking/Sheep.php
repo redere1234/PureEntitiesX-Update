@@ -103,11 +103,11 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 		$drops = [];
 		if($this->isLootDropAllowed() and !$this->isSheared() && !$this->getBreedingComponent()->isBaby()){
 			// http://minecraft.gamepedia.com/Sheep - drop 1 wool when not a baby and died
-			array_push($drops, Item::get(Item::WOOL, self::getColor(), 1));
+			array_push($drops, ItemFactory::getInstance()->get(Item::WOOL, self::getColor(), 1));
 			if($this->isOnFire()){
-				array_push($drops, Item::get(Item::MUTTON_COOKED, 0, mt_rand(1, 2)));
+				array_push($drops, ItemFactory::getInstance()->get(Item::MUTTON_COOKED, 0, mt_rand(1, 2)));
 			}else{
-				array_push($drops, Item::get(Item::MUTTON_RAW, 0, mt_rand(1, 2)));
+				array_push($drops, ItemFactory::getInstance()->get(Item::MUTTON_RAW, 0, mt_rand(1, 2)));
 			}
 		}
 		return $drops;
@@ -187,7 +187,7 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 		PureEntities::logOutput("$this(blockOfInterestReached): $block");
 		$this->stayTime = 100; // let this entity stay still
 		// play eat grass animation but only when there are players near ...
-		foreach($this->getLevel()->getPlayers() as $player){ // don't know if this is the correct one :/
+		foreach($this->getWorld()->getPlayers() as $player){ // don't know if this is the correct one :/
 			if($player->distance($this) <= 49){
 				$pk = new ActorEventPacket();
 				$pk->entityRuntimeId = $this->getId();
@@ -197,9 +197,9 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 		}
 		// after the eat grass has been played, we reset the block through air
 		if($block->getId() === Block::GRASS or $block->getId() === Block::TALL_GRASS){ // grass blocks are replaced by dirt blocks ...
-			$this->getLevel()->setBlock($block, new Dirt());
+			$this->getWorld()->setBlock($block, new Dirt());
 		}else{
-			$this->getLevel()->setBlock($block, new Air());
+			$this->getWorld()->setBlock($block, new Air());
 		}
 		// this sheep is not sheared anymore ... ;)
 		$this->setSheared(false);

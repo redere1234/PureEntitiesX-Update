@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\ButtonText;
 use revivalpmmp\pureentities\data\Data;
@@ -66,11 +66,11 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
-			array_push($drops, Item::get(Item::LEATHER, 0, mt_rand(0, 2)));
+			array_push($drops, ItemFactory::getInstance()->get(Item::LEATHER, 0, mt_rand(0, 2)));
 			if($this->isOnFire()){
-				array_push($drops, Item::get(Item::COOKED_BEEF, 0, mt_rand(1, 3)));
+				array_push($drops, ItemFactory::getInstance()->get(Item::COOKED_BEEF, 0, mt_rand(1, 3)));
 			}else{
-				array_push($drops, Item::get(Item::RAW_BEEF, 0, mt_rand(1, 3)));
+				array_push($drops, ItemFactory::getInstance()->get(Item::RAW_BEEF, 0, mt_rand(1, 3)));
 			}
 		}
 		return $drops;
@@ -88,10 +88,10 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
 	 */
 	public function milk(Player $player) : bool{
 		$item = $player->getInventory()->getItemInHand();
-		if($item !== null && $item->getId() === Item::BUCKET){
+		if($item !== null && $item->getTypeId() === ItemIds::BUCKET){
 			--$item->count;
 			$player->getInventory()->setItemInHand($item);
-			$bucketWithMilk = Item::get(Item::BUCKET, 0, 1);
+			$bucketWithMilk = ItemFactory::getInstance()->get(Item::BUCKET, 0, 1);
 			$bucketWithMilk->setDamage(1);
 			$player->getInventory()->addItem($bucketWithMilk);
 			InteractionHelper::displayButtonText("", $player);
@@ -110,7 +110,7 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
 	public function showButton(Player $player){
 		if($player->getInventory() !== null){ // sometimes, we get null on getInventory?! F**k
 			$itemInHand = $player->getInventory()->getItemInHand();
-			if($itemInHand->getId() === Item::BUCKET && $itemInHand->getDamage() === 0){ // empty bucket
+			if($itemInHand->getTypeId() === ItemIds::BUCKET && $itemInHand->getDamage() === 0){ // empty bucket
 				InteractionHelper::displayButtonText(ButtonText::MILK, $player);
 				return;
 			}

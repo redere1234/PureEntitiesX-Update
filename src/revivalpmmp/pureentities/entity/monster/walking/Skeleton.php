@@ -27,8 +27,8 @@ use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
-use pocketmine\Player;
+use pocketmine\world\World;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\components\MobEquipment;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -89,17 +89,17 @@ class Skeleton extends WalkingMonster implements IntfCanEquip, ProjectileSource{
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->isClosed() or $this->getLevel() === null) return false;
+		if($this->isClosed() or $this->getWorld() === null) return false;
 		// Timings::$timerEntityBaseTick->startTiming();
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$time = $this->getLevel() ? $this->getLevel()->getTime() % Level::TIME_FULL : Level::TIME_NIGHT;
+		$time = $this->getWorld() ? $this->getWorld()->getTime() % World::TIME_FULL : World::TIME_NIGHT;
 		if(
 			!$this->isOnFire() //if not already on fire
-			&& ($time < Level::TIME_SUNSET || $time > Level::TIME_SUNRISE) // If time inferior of TIME_NIGHT and superior of TIME_SUNRISE
-			&& !($this->getLevel()->getBlock($this) instanceof Water) // IF not in water
-			&& $this->level->getBlockSkyLightAt((int) floor($this->x), (int) floor($this->y), (int) floor($this->z)) >= 14 //If is in the sun
+			&& ($time < World::TIME_SUNSET || $time > World::TIME_SUNRISE) // If time inferior of TIME_NIGHT and superior of TIME_SUNRISE
+			&& !($this->getWorld()->getBlock($this) instanceof Water) // IF not in water
+			&& $this->getWorld()->getBlockSkyLightAt((int) floor($this->x), (int) floor($this->y), (int) floor($this->z)) >= 14 //If is in the sun
 			&& $this->getMobEquipment()->getHelmet() === null
 		){
 			$this->setOnFire(2);
@@ -112,8 +112,8 @@ class Skeleton extends WalkingMonster implements IntfCanEquip, ProjectileSource{
 	public function getDrops() : array{
 		$drops = [];
 		if($this->isLootDropAllowed()){
-			array_push($drops, Item::get(Item::ARROW, 0, mt_rand(0, 2)));
-			array_push($drops, Item::get(Item::BONE, 0, mt_rand(0, 2)));
+			array_push($drops, ItemFactory::getInstance()->get(Item::ARROW, 0, mt_rand(0, 2)));
+			array_push($drops, ItemFactory::getInstance()->get(Item::BONE, 0, mt_rand(0, 2)));
 		}
 		return $drops;
 	}

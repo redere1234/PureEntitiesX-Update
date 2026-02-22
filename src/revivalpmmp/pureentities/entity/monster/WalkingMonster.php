@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\monster;
 
 use pocketmine\block\Water;
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -30,7 +30,7 @@ use pocketmine\item\Item;
 use pocketmine\Item\ItemIds;
 use pocketmine\math\Math;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use revivalpmmp\pureentities\data\ButtonText;
 use revivalpmmp\pureentities\entity\animal\Animal;
@@ -171,7 +171,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster{
 	}
 
 	public function onUpdate(int $currentTick) : bool{
-		if($this->getLevel() === null) return false;
+		if($this->getWorld() === null) return false;
 		if($this->server->getDifficulty() < 1){
 			$this->despawnFromAll();
 			$this->close();
@@ -227,12 +227,12 @@ abstract class WalkingMonster extends WalkingEntity implements Monster{
 
 		$this->attackDelay += $tickDiff;
 		if($this instanceof Enderman){
-			if($this->level->getBlock(new Vector3(Math::floorFloat($this->x), (int) $this->y, Math::floorFloat($this->z))) instanceof Water){
+			if($this->getWorld()->getBlock(new Vector3(Math::floorFloat($this->x), (int) $this->y, Math::floorFloat($this->z))) instanceof Water){
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
 				$this->attack($ev);
 				$this->move(mt_rand(-20, 20), mt_rand(-20, 20), mt_rand(-20, 20));
 			}
-		}elseif($this->getLevel() !== null){
+		}elseif($this->getWorld() !== null){
 			if(!$this->hasEffect(Effect::WATER_BREATHING) && $this->isUnderwater()){
 				$hasUpdate = true;
 				$airTicks = $this->getDataPropertyManager()->getPropertyValue(self::DATA_AIR, Entity::DATA_TYPE_SHORT) - $tickDiff;
@@ -284,7 +284,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster{
 		if($this->isFriendly()){
 			if($player->getInventory() !== null){ // sometimes, we get null on getInventory?!
 				$itemInHand = $player->getInventory()->getItemInHand()->getId();
-				if($this instanceof IntfShearable and $itemInHand === Item::SHEARS and !$this->isSheared()){
+				if($this instanceof IntfShearable and $itemInHand->getTypeId() === ItemIds::SHEARS and !$this->isSheared()){
 					InteractionHelper::displayButtonText(ButtonText::SHEAR, $player);
 					PureEntities::logOutput("Button text set to Shear.");
 
@@ -329,11 +329,11 @@ abstract class WalkingMonster extends WalkingEntity implements Monster{
 	}
 
 	/**
-	 * @param Creature $creature
+	 * @param Living $creature
 	 * @param float    $distance
 	 * @return bool
 	 */
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 		$targetOption = false;
 
 		if($this->isFriendly()){
@@ -365,7 +365,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster{
 			}
 		}else{
 			// when the entity is not friendly, it attacks the player!!!
-			$targetOption = ($this instanceof Monster && (!($creature instanceof Player) || ($creature->isSurvival() && $creature->spawned)) && $creature->isAlive() && !$creature->isClosed() && $distance <= 81);
+			$targetOption = ($this instanceof Monster && (!($creature instanceof Player) || (($creature->getGamemode() === GameMode::SURVIVAL || $creature->getGamemode() === GameMode::ADVENTURE) && $creature->spawned)) && $creature->isAlive() && !$creature->isClosed() && $distance <= 81);
 		}
 		return $targetOption;
 	}

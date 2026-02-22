@@ -5,7 +5,7 @@ namespace revivalpmmp\pureentities\commands;
 
 
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use revivalpmmp\pureentities\entity\BaseEntity;
@@ -32,7 +32,7 @@ class RemoveEntitiesCommand extends PureEntitiesXCommand{
 		}
 		$counterLivingEntities = 0;
 		$counterOtherEntities = 0;
-		foreach(Server::getInstance()->getLevels() as $level){
+		foreach(Server::getInstance()->getWorldManager()->getWorlds() as $level){
 			foreach($level->getEntities() as $entity){
 				if($entity instanceof Player){
 					continue;

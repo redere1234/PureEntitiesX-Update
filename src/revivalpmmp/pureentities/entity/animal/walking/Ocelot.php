@@ -21,9 +21,9 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -156,7 +156,7 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 				// Need to reconsider this method and test response when multiple matches are within
 				// the bounding box across multiple checks.  Ocelots should be able to 'stalk' a target
 				// after choosing one instead of jumping between multiple entities as targets.
-				foreach($this->getLevel()->getNearbyEntities($this->boundingBox->expandedCopy(10, 10, 10), $this) as $entity){
+				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(10, 10, 10), $this) as $entity){
 					if($entity instanceof Chicken and $entity->isAlive()){
 						$this->setBaseTarget($entity); // set the given entity as target ...
 						return;
@@ -205,10 +205,10 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 
 	}
 
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 
 		if($creature instanceof Player){
-			return $creature->spawned && $creature->isAlive() && !$creature->isClosed() && $creature->getInventory()->getItemInHand()->getId() === Item::RAW_FISH && $distance <= 49;
+			return $creature->spawned && $creature->isAlive() && !$creature->isClosed() && $creature->getInventory()->getItemInHand()->getTypeId() === ItemIds::RAW_FISH && $distance <= 49;
 		}
 		return false;
 	}

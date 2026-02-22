@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\task\async;
 
 
-use pocketmine\level\format\Chunk;
+use pocketmine\world\format\Chunk;
 use pocketmine\scheduler\AsyncTask;
 
 abstract class BaseAsyncSpawnTask extends AsyncTask{

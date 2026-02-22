@@ -11,11 +11,12 @@ use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use pocketmine\math\Math;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
+use pocketmine\player\GameMode;
 use revivalpmmp\pureentities\components\IdlingComponent;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -76,7 +77,7 @@ abstract class BaseEntity extends Living implements IntfCanBreed, IntfTameable
         parent::__destruct();
     }
 
-    public function __construct(Level $level, CompoundTag $nbt)
+    public function __construct(World $level, CompoundTag $nbt)
     {
         $this->width = Data::WIDTHS[static::NETWORK_ID] ?? 1.0;
         $this->height = Data::HEIGHTS[static::NETWORK_ID] ?? 1.8;
@@ -160,7 +161,7 @@ abstract class BaseEntity extends Living implements IntfCanBreed, IntfTameable
      */
     public function setBaseTarget($baseTarget): void
     {
-        if ($baseTarget instanceof Player && !in_array($baseTarget->getGamemode(), [Player::SURVIVAL, Player::ADVENTURE])) {
+        if ($baseTarget instanceof Player && !in_array($baseTarget->getGamemode(), [GameMode::SURVIVAL(), GameMode::ADVENTURE()])) {
             return;
         }
         if ($baseTarget !== $this->baseTarget) {
@@ -381,7 +382,7 @@ abstract class BaseEntity extends Living implements IntfCanBreed, IntfTameable
     public function targetOption(Living $creature, float $distance): bool
     {
         return $this instanceof Monster &&
-               (!$creature instanceof Player || ($creature->isSurvival() && $creature->isOnline())) &&
+               (!$creature instanceof Player || (($creature->getGamemode() === GameMode::SURVIVAL || $creature->getGamemode() === GameMode::ADVENTURE) && $creature->isOnline())) &&
                $creature->isAlive() && !$creature->isClosed() && $distance <= 81;
     }
 
@@ -399,5 +400,5 @@ abstract class BaseEntity extends Living implements IntfCanBreed, IntfTameable
 
     // ... (el resto del código original sigue igual: checkAttackByTamedEntities, checkTamedMobsAttack, getTamedMobs, isCheckTargetAllowedBySkip, isLootDropAllowed, isFollowingPlayer)
 
-    // Puedes copiar y pegar el resto de métodos originales aquí sin cambios, ya que no usan Creature directamente.
+    // Puedes copiar y pegar el resto de métodos originales aquí sin cambios, ya que no usan Living directamente.
 }

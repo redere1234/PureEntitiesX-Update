@@ -25,7 +25,7 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use revivalpmmp\pureentities\entity\JumpingEntity;
 
@@ -161,7 +161,7 @@ abstract class JumpingMonster extends JumpingEntity implements Monster{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->isClosed() or $this->getLevel() === null){
+		if($this->isClosed() or $this->getWorld() === null){
 			return $hasUpdate;
 		}
 

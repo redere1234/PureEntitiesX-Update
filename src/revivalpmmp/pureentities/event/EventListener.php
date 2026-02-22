@@ -31,8 +31,9 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
+use pocketmine\item\ItemIds;
+use pocketmine\world\World;
+use pocketmine\world\Position;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
@@ -178,13 +179,13 @@ class EventListener implements Listener{
 		}
 
 		$block = $ev->getBlock();
-		$level = $block->getLevel();
-		if(($block->getId() !== Item::JACK_O_LANTERN && $block->getId() !== Item::PUMPKIN) || !$level instanceof Level){
+		$level = $block->getWorld();
+		if(($block->getTypeId() !== ItemIds::JACK_O_LANTERN && $block->getTypeId() !== ItemIds::PUMPKIN) || !$level instanceof World){
 			return;
 		}
 		if(
-			$block->getSide(Vector3::SIDE_DOWN)->getId() === Item::SNOW_BLOCK
-			&& $block->getSide(Vector3::SIDE_DOWN, 2)->getId() === Item::SNOW_BLOCK
+			$block->getSide(Vector3::SIDE_DOWN)->getTypeId() === ItemIds::SNOW_BLOCK
+			&& $block->getSide(Vector3::SIDE_DOWN, 2)->getTypeId() === ItemIds::SNOW_BLOCK
 		){
 			for($y = 1; $y < 3; $y++){
 				$level->setBlock($block->add(0, -$y, 0), new Air());
@@ -195,14 +196,14 @@ class EventListener implements Listener{
 			}
 			$ev->setCancelled();
 		}elseif(
-			$block->getSide(Vector3::SIDE_DOWN)->getId() === Item::IRON_BLOCK
-			&& $block->getSide(Vector3::SIDE_DOWN, 2)->getId() === Item::IRON_BLOCK
+			$block->getSide(Vector3::SIDE_DOWN)->getTypeId() === ItemIds::IRON_BLOCK
+			&& $block->getSide(Vector3::SIDE_DOWN, 2)->getTypeId() === ItemIds::IRON_BLOCK
 		){
 			$first = $block->getSide(Vector3::SIDE_EAST);
 			$second = $block->getSide(Vector3::SIDE_EAST);
 			if(
-				$first->getId() === Item::IRON_BLOCK
-				&& $second->getId() === Item::IRON_BLOCK
+				$first->getTypeId() === ItemIds::IRON_BLOCK
+				&& $second->getTypeId() === ItemIds::IRON_BLOCK
 			){
 				$level->setBlock($first, new Air());
 				$level->setBlock($second, new Air());
@@ -210,8 +211,8 @@ class EventListener implements Listener{
 				$first = $block->getSide(Vector3::SIDE_NORTH);
 				$second = $block->getSide(Vector3::SIDE_SOUTH);
 				if(
-					$first->getId() === Item::IRON_BLOCK
-					&& $second->getId() === Item::IRON_BLOCK
+					$first->getTypeId() === ItemIds::IRON_BLOCK
+					&& $second->getTypeId() === ItemIds::IRON_BLOCK
 				){
 					$level->setBlock($first, new Air());
 					$level->setBlock($second, new Air());
@@ -246,7 +247,7 @@ class EventListener implements Listener{
 	 */
 	public function playerJoin(PlayerJoinEvent $ev){
 		PureEntities::logOutput("[EventListener] playerJoin: " . $ev->getPlayer()->getName());
-		foreach($ev->getPlayer()->getLevel()->getEntities() as $entity){
+		foreach($ev->getPlayer()->getWorld()->getEntities() as $entity){
 			if($entity->isAlive() and !$entity->isClosed() and $entity instanceof IntfCanEquip and $entity instanceof WalkingMonster and
 				PluginConfiguration::getInstance()->getEnableAsyncTasks()
 			){
@@ -269,7 +270,7 @@ class EventListener implements Listener{
 	 */
 	public function playerQuit(PlayerQuitEvent $ev){
 		PureEntities::logOutput("[EventListener] playerQuit: " . $ev->getPlayer()->getName());
-		foreach($ev->getPlayer()->getLevel()->getEntities() as $entity){
+		foreach($ev->getPlayer()->getWorld()->getEntities() as $entity){
 			if($entity instanceof IntfTameable and $entity->getOwner() !== null and
 				strcasecmp($entity->getOwner()->getName(), $ev->getPlayer()->getName()) === 0
 			){

@@ -25,7 +25,7 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\entity\SwimmingEntity;
 
 // use pocketmine\event\Timings;
@@ -57,7 +57,7 @@ abstract class SwimmingAnimal extends SwimmingEntity implements Animal{
 			return $hasUpdate;
 		}
 
-		if($this->getLevel() !== null && !$this->hasEffect(Effect::WATER_BREATHING) && !$this->isUnderwater()){
+		if($this->getWorld() !== null && !$this->hasEffect(Effect::WATER_BREATHING) && !$this->isUnderwater()){
 			$hasUpdate = true;
 			$airTicks = $this->getDataPropertyManager()->getPropertyValue(self::DATA_AIR, Entity::DATA_TYPE_SHORT) - $tickDiff;
 			if($airTicks <= -20){

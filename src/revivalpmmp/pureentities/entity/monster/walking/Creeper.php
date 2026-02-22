@@ -21,12 +21,12 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Explosion;
+use pocketmine\world\Explosion;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -103,7 +103,7 @@ class Creeper extends WalkingMonster implements Explosive{
 					}
 				}
 			}else{
-				if($this->getBaseTarget()->distance($this) <= 3 && $this->getBaseTarget() instanceof Creature){
+				if($this->getBaseTarget()->distance($this) <= 3 && $this->getBaseTarget() instanceof Living){
 					$this->setMovement(false);
 					$this->setIgnited(true);
 				}else{
@@ -134,7 +134,7 @@ class Creeper extends WalkingMonster implements Explosive{
 
 	public function getDrops() : array{
 		if($this->isLootDropAllowed()){
-			return [Item::get(Item::GUNPOWDER, 0, mt_rand(0, 2))];
+			return [ItemFactory::getInstance()->get(Item::GUNPOWDER, 0, mt_rand(0, 2))];
 		}else{
 			return [];
 		}
@@ -153,7 +153,7 @@ class Creeper extends WalkingMonster implements Explosive{
 	}
 
 	public function setIgnited(bool $ignited) : void{
-		if($ignited) $this->getLevel()->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_IGNITE);
+		if($ignited) $this->getWorld()->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_IGNITE);
 		$this->resetFuse();
 		$this->namedtag->setByte(self::TAG_IGNITED, intval($ignited));
 		$this->setGenericFlag(self::DATA_FLAG_IGNITED, $ignited);

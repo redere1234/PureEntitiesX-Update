@@ -21,7 +21,7 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\entity;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use revivalpmmp\pureentities\entity\animal\Animal;
@@ -40,10 +40,10 @@ abstract class SwimmingEntity extends BaseEntity{
 			}
 
 			$target = $this->getBaseTarget();
-			if(!$target instanceof Creature or !$this->targetOption($target, $this->distanceSquared($target))){
+			if(!$target instanceof Living or !$this->targetOption($target, $this->distanceSquared($target))){
 				$near = PHP_INT_MAX;
-				foreach($this->getLevel()->getEntities() as $creature){
-					if($creature === $this || !($creature instanceof Creature) || $creature instanceof Animal){
+				foreach($this->getWorld()->getEntities() as $creature){
+					if($creature === $this || !($creature instanceof Living) || $creature instanceof Animal){
 						continue;
 					}
 
@@ -63,7 +63,7 @@ abstract class SwimmingEntity extends BaseEntity{
 				}
 			}
 
-			if($this->getBaseTarget() instanceof Creature && $this->getBaseTarget()->isAlive()){
+			if($this->getBaseTarget() instanceof Living && $this->getBaseTarget()->isAlive()){
 				return;
 			}
 
@@ -95,7 +95,7 @@ abstract class SwimmingEntity extends BaseEntity{
 
 		$before = $this->getBaseTarget();
 		$this->checkTarget();
-		if($this->getBaseTarget() instanceof Creature or $before !== $this->getBaseTarget()){
+		if($this->getBaseTarget() instanceof Living or $before !== $this->getBaseTarget()){
 			$x = $this->getBaseTarget()->x - $this->x;
 			$y = $this->getBaseTarget()->y - $this->y;
 			$z = $this->getBaseTarget()->z - $this->z;

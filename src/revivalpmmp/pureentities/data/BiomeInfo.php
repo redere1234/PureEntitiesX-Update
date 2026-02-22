@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\data;
 
 
-use pocketmine\level\biome\Biome;
+use pocketmine\world\biome\Biome;
 
 class BiomeInfo{
 

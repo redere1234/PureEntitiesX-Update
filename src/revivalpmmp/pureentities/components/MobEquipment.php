@@ -55,7 +55,7 @@ use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use revivalpmmp\pureentities\config\mobequipment\EntityConfig;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -152,7 +152,7 @@ class MobEquipment{
 	public function itemReached(ItemEntity $item){
 		PureEntities::logOutput($this->entity . ": reached $item. Pick it up!");
 		$this->entity->stayTime = 50; // first: stay here!
-		$this->entity->getLevel()->removeEntity($item); // remove item from level
+		$this->entity->getWorld()->removeEntity($item); // remove item from level
 		$this->putInCorrectSlot($item->getItem());
 
 		// broadcast pick up item (plays pickup animation)
@@ -299,7 +299,7 @@ class MobEquipment{
 	public function getLootOfInterest(int $blocksAround){
 		$itemsAround = [];
 
-		foreach($this->entity->getLevel()->getNearbyEntities($this->entity->boundingBox->expandedCopy($blocksAround, $blocksAround, $blocksAround)) as $entity){
+		foreach($this->entity->getWorld()->getNearbyEntities($this->entity->boundingBox->expandedCopy($blocksAround, $blocksAround, $blocksAround)) as $entity){
 			if($entity instanceof ItemEntity and in_array($entity->getItem()->getId(), $this->entity->getPickupLoot())){
 				PureEntities::logOutput($this->entity . ": found interesting loot: " . $entity->getItem());
 				$itemsAround[] = $entity;
@@ -580,13 +580,13 @@ class MobEquipment{
 				$nbt = $this->entity->namedtag->getListTag(NBTConst::NBT_KEY_ARMOR_ITEMS);
 				if($nbt instanceof ListTag){
 					$itemId = $nbt->get(0)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->boots = Item::get($itemId);
+					$this->boots = ItemFactory::getInstance()->get($itemId);
 					$itemId = $nbt->get(1)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->leggings = Item::get($itemId);
+					$this->leggings = ItemFactory::getInstance()->get($itemId);
 					$itemId = $nbt->get(2)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->chestplate = Item::get($itemId);
+					$this->chestplate = ItemFactory::getInstance()->get($itemId);
 					$itemId = $nbt->get(3)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->helmet = Item::get($itemId);
+					$this->helmet = ItemFactory::getInstance()->get($itemId);
 					PureEntities::logOutput("MobEquipment: loaded from NBT [boots:" . $this->boots . "] [legs:" . $this->leggings . "] " .
 						"[chest:" . $this->chestplate . "] [helmet:" . $this->helmet . "]");
 				}
@@ -598,7 +598,7 @@ class MobEquipment{
 				if($nbt instanceof ListTag){
 					$itemId = $nbt[0]["id"];
 					PureEntities::logOutput("MobEquipment: found hand item (id): $itemId -> set it now!");
-					$this->mainHand = Item::get($itemId);
+					$this->mainHand = ItemFactory::getInstance()->get($itemId);
 				}
 			}
 			$this->recalculateArmorDamageReduction();
@@ -625,10 +625,10 @@ class MobEquipment{
 	private function createArmorEquipPacket() : MobArmorEquipmentPacket{
 		$pk = new MobArmorEquipmentPacket();
 		$pk->entityRuntimeId = $this->entity->getId();
-		$pk->head = $this->helmet ? ItemStackWrapper::legacy($this->helmet) : ItemStackWrapper::legacy(Item::get(ItemIds::AIR));
-		$pk->chest = $this->chestplate ? ItemStackWrapper::legacy($this->chestplate) : ItemStackWrapper::legacy(Item::get(ItemIds::AIR));
-		$pk->legs = $this->leggings ? ItemStackWrapper::legacy($this->leggings) : ItemStackWrapper::legacy(Item::get(ItemIds::AIR));
-		$pk->feet = $this->boots ? ItemStackWrapper::legacy($this->boots) : ItemStackWrapper::legacy(Item::get(ItemIds::AIR));
+		$pk->head = $this->helmet ? ItemStackWrapper::legacy($this->helmet) : ItemStackWrapper::legacy(ItemFactory::getInstance()->get(ItemIds::AIR));
+		$pk->chest = $this->chestplate ? ItemStackWrapper::legacy($this->chestplate) : ItemStackWrapper::legacy(ItemFactory::getInstance()->get(ItemIds::AIR));
+		$pk->legs = $this->leggings ? ItemStackWrapper::legacy($this->leggings) : ItemStackWrapper::legacy(ItemFactory::getInstance()->get(ItemIds::AIR));
+		$pk->feet = $this->boots ? ItemStackWrapper::legacy($this->boots) : ItemStackWrapper::legacy(ItemFactory::getInstance()->get(ItemIds::AIR));
 		$pk->encode();
 		$pk->isEncoded = true;
 		return $pk;
@@ -637,14 +637,14 @@ class MobEquipment{
 	private function createHandItemsEquipPacket() : MobEquipmentPacket{
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->entity->getId();
-		$pk->item = $this->mainHand instanceof Item ? ItemStackWrapper::legacy($this->mainHand) : ItemStackWrapper::legacy(Item::get(ItemIds::AIR));
+		$pk->item = $this->mainHand instanceof Item ? ItemStackWrapper::legacy($this->mainHand) : ItemStackWrapper::legacy(ItemFactory::getInstance()->get(ItemIds::AIR));
 		$pk->inventorySlot = 0;
 		$pk->hotbarSlot = 0;
 		return $pk;
 	}
 
 	private function sendPacketToPlayers(DataPacket $packet){
-		foreach($this->entity->getLevel()->getServer()->getOnlinePlayers() as $player){
+		foreach($this->entity->getWorld()->getServer()->getOnlinePlayers() as $player){
 			$player->dataPacket($packet);
 		}
 	}

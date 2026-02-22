@@ -24,7 +24,7 @@ namespace revivalpmmp\pureentities\components;
 
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\BaseEntity;
 use revivalpmmp\pureentities\features\IntfCanBreed;
@@ -325,7 +325,7 @@ class BreedingComponent{
 
 			// emit heart particles ...
 			if($this->inLoveTimer >= self::IN_LOVE_EMIT_DELAY and $this->emitLoveParticles){
-				foreach($this->entity->getLevel()->getPlayers() as $player){ // don't know if this is the correct one :/
+				foreach($this->entity->getWorld()->getPlayers() as $player){ // don't know if this is the correct one :/
 					if($player->distance($this->entity) <= 49){
 						$pk = new ActorEventPacket();
 						$pk->entityRuntimeId = $this->entity->getId();
@@ -367,7 +367,7 @@ class BreedingComponent{
 	 */
 	private function findAnotherEntityInLove(int $range){
 		$entityFound = false;
-		foreach($this->entity->getLevel()->getEntities() as $otherEntity){
+		foreach($this->entity->getWorld()->getEntities() as $otherEntity){
 			/**
 			 * @var $otherEntity IntfCanBreed|BaseEntity
 			 */
@@ -399,7 +399,7 @@ class BreedingComponent{
 		if($this->entity instanceof IntfTameable){
 			$owner = $this->entity->getOwner();
 		}
-		PureEntities::getInstance()->scheduleCreatureSpawn($this->entity, $this->entity->getNetworkId(), $this->entity->getLevel(),
+		PureEntities::getInstance()->scheduleCreatureSpawn($this->entity, $this->entity->getNetworkId(), $this->entity->getWorld(),
 			"Animal", true, $this->entity, $owner);
 	}
 

@@ -23,7 +23,7 @@ namespace revivalpmmp\pureentities\traits;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\walking\Cow;
 use revivalpmmp\pureentities\entity\animal\walking\Mooshroom;
@@ -55,7 +55,7 @@ trait Shearable{
 				$dropCount = mt_rand(1, $this->maxShearDrops);
 			}
 			if($dropCount !== 0){
-				$player->getLevel()->dropItem($this->asVector3(), Item::get($this->shearItems, $meta, $dropCount));
+				$player->getWorld()->dropItem($this->asVector3(), ItemFactory::getInstance()->get($this->shearItems, $meta, $dropCount));
 			}
 			$this->setSheared(true);
 			return true;

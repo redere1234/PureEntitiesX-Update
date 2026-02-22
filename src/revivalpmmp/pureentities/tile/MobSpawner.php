@@ -21,11 +21,11 @@ declare(strict_types=1);
 
 namespace revivalpmmp\pureentities\tile;
 
-use pocketmine\block\BlockIds;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\world\World;
+use pocketmine\world\Position;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\tile\Spawnable;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\PluginConfiguration;
@@ -53,7 +53,7 @@ class MobSpawner extends Spawnable{
 	/** @var int */
 	protected $spawnCount = 0;
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	public function __construct(World $level, CompoundTag $nbt){
 		$this->name = "Monster Spawner";
 
 		parent::__construct($level, $nbt);
@@ -78,7 +78,7 @@ class MobSpawner extends Spawnable{
 		}
 		$count = 0;
 		$isValid = false;
-		foreach($this->level->getEntities() as $entity){
+		foreach($this->getWorld()->getEntities() as $entity){
 			$distance = $entity->distance($this);
 			if($distance <= $this->requiredPlayerRange){
 				if($entity instanceof Player){
@@ -106,8 +106,8 @@ class MobSpawner extends Spawnable{
 			$y = $this->y + mt_rand(-1, 1);
 			$x = $this->x + mt_rand(-$this->spawnRange, $this->spawnRange);
 			$z = $this->z + mt_rand(-$this->spawnRange, $this->spawnRange);
-			$pos = new Position($x, $y, $z, $this->level);
-			if($this->level->getBlock($pos)->getId() === BlockIds::AIR){
+			$pos = new Position($x, $y, $z, $this->getWorld());
+			if($this->getWorld()->getBlock($pos)->getId() === BlockTypeIds::AIR){
 				//TODO: Vaildate light levels and other required spawn conditions.
 				$entity = PureEntities::create($this->entityId, $pos);
 				if($entity !== null){

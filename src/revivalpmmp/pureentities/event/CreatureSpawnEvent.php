@@ -23,8 +23,8 @@ namespace revivalpmmp\pureentities\event;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\plugin\PluginEvent;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
+use pocketmine\world\World;
+use pocketmine\world\Position;
 use revivalpmmp\pureentities\PureEntities;
 
 class CreatureSpawnEvent extends PluginEvent implements Cancellable{
@@ -39,15 +39,15 @@ class CreatureSpawnEvent extends PluginEvent implements Cancellable{
 	 * @param PureEntities $plugin
 	 * @param Position     $pos
 	 * @param int          $entityid
-	 * @param Level        $level
+	 * @param World        $level
 	 * @param string       $type
 	 */
-	public function __construct(PureEntities $plugin, Position $pos, int $entityid, Level $level, string $type){
+	public function __construct(PureEntities $plugin, Position $pos, int $entityid, World $level, string $type){
 		parent::__construct($plugin);
-		PureEntities::logOutput("New Creature Spawn Event! Entity ID = $entityid and Type $type");
+		PureEntities::logOutput("New Living Spawn Event! Entity ID = $entityid and Type $type");
 		$this->pos = $pos;
 		$this->entityid = $entityid;
-		$this->level = $level;
+		$this->getWorld() = $level;
 		$this->type = $type;
 	}
 
@@ -72,7 +72,7 @@ class CreatureSpawnEvent extends PluginEvent implements Cancellable{
 	 * @return Level
 	 */
 	public function getLevel(){
-		return $this->level;
+		return $this->getWorld();
 	}
 
 	/**

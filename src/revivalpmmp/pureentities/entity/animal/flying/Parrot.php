@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\entity\animal\flying;
 
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\item\Item;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -81,12 +81,12 @@ class Parrot extends FlyingAnimal implements IntfTameable, IntfCanInteract{
 		return "Parrot";
 	}
 
-	public function targetOption(Creature $creature, float $distance) : bool{
+	public function targetOption(Living $creature, float $distance) : bool{
 		return false;
 	}
 
 	public function getDrops() : array{
-		return [Item::get(Item::FEATHER, 0, mt_rand(1, 2))];
+		return [ItemFactory::getInstance()->get(Item::FEATHER, 0, mt_rand(1, 2))];
 	}
 
 	public function getMaxHealth() : int{

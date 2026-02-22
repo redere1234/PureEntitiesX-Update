@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\monster\Monster;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -70,9 +70,9 @@ class PolarBear extends WalkingMonster implements Monster{
 		$drops = [];
 		if($this->isLootDropAllowed()){
 			if(mt_rand(0, 3) > 0){
-				array_push($drops, Item::get(Item::RAW_FISH, 0, mt_rand(0, 2)));
+				array_push($drops, ItemFactory::getInstance()->get(Item::RAW_FISH, 0, mt_rand(0, 2)));
 			}else{
-				array_push($drops, Item::get(Item::RAW_SALMON, 0, mt_rand(0, 2)));
+				array_push($drops, ItemFactory::getInstance()->get(Item::RAW_SALMON, 0, mt_rand(0, 2)));
 			}
 		}
 		return $drops;

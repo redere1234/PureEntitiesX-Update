@@ -22,8 +22,8 @@ declare(strict_types=1);
 namespace revivalpmmp\pureentities\task\delayed;
 
 
-use pocketmine\level\Level;
-use pocketmine\Player;
+use pocketmine\world\World;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\Task;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -69,8 +69,8 @@ class ShowMobEquipmentTask extends Task{
 		if(!$this->playerJoined instanceof PluginBase or $this->playerJoined->isClosed() or $this->playerJoined->isFlaggedForDespawn()){
 			return;
 		}
-		$level = $this->playerJoined->getLevel();
-		if(!$level instanceof Level){
+		$level = $this->playerJoined->getWorld();
+		if(!$level instanceof World){
 			return;
 		}
 

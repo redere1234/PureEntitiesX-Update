@@ -23,13 +23,17 @@ namespace revivalpmmp\pureentities;
 
 use LogLevel;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
+use pocketmine\item\ItemIds;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\player\Player;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\plugin\PluginBase;
@@ -213,8 +217,8 @@ class PureEntities extends PluginBase
             }
         }
 
-        Tile::registerTile(MobSpawner::class);
-        BlockFactory::registerBlock(new MonsterSpawnerPEX(), true);
+        TileFactory::getInstance()->register(MobSpawner::class);
+        BlockFactory::getInstance()->register(new MonsterSpawnerPEX(), true);
 
         $this->saveDefaultConfig();
         Color::init();
@@ -271,10 +275,121 @@ class PureEntities extends PluginBase
         return $factory->create($type, $source->getWorld(), $nbt, ...$args);
     }
 
-    // ... (el resto del código sigue igual: scheduleCreatureSpawn, logOutput, getSuitableHeightPosition, etc.)
+    /**
+     * @param Position    $pos
+     * @param int         $entityid
+     * @param World       $world
+     * @param string      $type
+     * @param bool        $baby
+     * @param Entity|null $parentEntity
+     * @param Player|null $owner
+     * @return null|Entity
+     */
+    public function scheduleCreatureSpawn(Position $pos, int $entityid, World $world, string $type, bool $baby = false, Entity $parentEntity = null, Player $owner = null): ?Entity
+    {
+        $this->getServer()->getPluginManager()->callEvent($event = new CreatureSpawnEvent($this, $pos, $entityid, $world, $type));
 
-    // Puedes copiar y pegar el resto del archivo original aquí, ya que no hay más cambios críticos en esas funciones.
-    // Si quieres que te complete alguna función específica que aún falle, pásame el error nuevo y lo arreglamos.
+        if ($event->isCancelled()) {
+            return null;
+        } else {
+            $entity = self::create($entityid, $pos);
+            if ($entity !== null) {
+                if ($entity instanceof IntfCanBreed and $baby and $entity->getBreedingComponent() !== false) {
+                    $entity->getBreedingComponent()->setAge(-6000); // in 5 minutes it will be an adult (atm only sheep)
+                    if ($parentEntity !== null) {
+                        $entity->getBreedingComponent()->setParent($parentEntity);
+                    }
+                }
+                // new: a baby's parent (like a wolf) may belong to a player - if so, the baby is also owned by the player!
+                if ($owner !== null && $entity instanceof IntfTameable) {
+                    $entity->setTamed(true);
+                    $entity->setOwner($owner);
+                }
+                self::logOutput("PureEntities: scheduleCreatureSpawn [type:$entity] [baby:$baby]");
+                $entity->spawnToAll();
+
+                // additionally: mob equipment
+                if ($entity instanceof BaseEntity) {
+                    MobEquipper::equipMob($entity);
+                }
+
+                return $entity;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Logs an output to the plugin's logfile ...
+     * @param string $message the output to be appended
+     * @param string $type the type of output to log
+     */
+    public static function logOutput(string $message, string $type = LogLevel::DEBUG): void
+    {
+        $logger = self::getInstance()->getLogger();
+        switch ($type) {
+            case LogLevel::EMERGENCY:
+                $logger->emergency($message);
+                break;
+            case LogLevel::ALERT:
+                $logger->alert($message);
+                break;
+            case LogLevel::CRITICAL:
+                $logger->critical($message);
+                break;
+            case LogLevel::ERROR:
+                $logger->error($message);
+                break;
+            case LogLevel::WARNING:
+                $logger->warning($message);
+                break;
+            case LogLevel::NOTICE:
+                $logger->notice($message);
+                break;
+            case LogLevel::INFO:
+                $logger->info($message);
+                break;
+            case LogLevel::DEBUG:
+            default:
+                $logger->debug($message);
+                break;
+        }
+    }
+
+    /**
+     * Returns a suitable Y-position for spawning an entity, starting from the given coordinates.
+     *
+     * @param float|int $x the x position to start search
+     * @param float|int $y the y position to start search
+     * @param float|int $z the z position to start searching
+     * @param World     $world World the world object to search in
+     * @return null|Position  NULL if no valid position was found or the final AIR spawn position
+     */
+    public static function getSuitableHeightPosition($x, $y, $z, World $world): ?Position
+    {
+        $startingY = $y;
+        $previousBlockIsAir = $world->getBlockAt((int)$x, (int)$y + 1, (int)$z)->getTypeId() === BlockTypeIds::AIR;
+        $cycleIncomplete = true;
+        do {
+            $id = $world->getBlockAt((int)$x, (int)$y, (int)$z)->getTypeId();
+            if ($id === BlockTypeIds::AIR) {
+                $previousBlockIsAir = true;
+            } elseif ($previousBlockIsAir) {
+                return new Position($x, $y, $z, $world);
+            } else {
+                $previousBlockIsAir = false;
+            }
+            if (--$y < 1) {
+                $y = $world->getHighestBlockAt((int)$x, (int)$z) - 1;
+                $previousBlockIsAir = $world->getBlockAt((int)$x, (int)$y + 1, (int)$z)->getTypeId() === BlockTypeIds::AIR;
+            }
+            if ($y === $startingY) {
+                $cycleIncomplete = false;
+            }
+        } while ($cycleIncomplete);
+        self::logOutput("No valid spawn position found ");
+        return null;
+    }
 
     /**
      * Returns the "short" name of a class without namespace ...
@@ -311,6 +426,6 @@ class PureEntities extends PluginBase
         // Random method used to get 8 block difference from player to entity spawn
         $x = $player->x + (random_int($minimumDistanceToPlayer, $maximumDistanceToPlayer) * (random_int(0, 1) === 0 ? 1 : -1));
         $z = $player->z + (random_int($minimumDistanceToPlayer, $maximumDistanceToPlayer) * (random_int(0, 1) === 0 ? 1 : -1));
-        return new Position($x, $player->y, $z, $player->getLevel());
+        return new Position($x, $player->y, $z, $player->getWorld());
     }
 }

@@ -24,7 +24,7 @@ namespace revivalpmmp\pureentities\task\async;
 
 use pocketmine\block\Solid;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\format\Chunk;
+use pocketmine\world\format\Chunk;
 
 class HostileSpawnAsyncTask extends BaseAsyncSpawnTask{
 

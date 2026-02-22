@@ -24,12 +24,12 @@ namespace revivalpmmp\pureentities\entity\monster\flying;
 use pocketmine\block\Liquid;
 use pocketmine\block\Stair;
 use pocketmine\block\StoneSlab;
-use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
 use pocketmine\entity\Entity;
 use pocketmine\math\Math;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\Animal;
 use revivalpmmp\pureentities\entity\BaseEntity;
@@ -60,10 +60,10 @@ class Vex extends FlyingMonster implements Monster{
 			}
 
 			$target = $this->getBaseTarget();
-			if(!($target instanceof Creature) or !$this->targetOption($target, $this->distanceSquared($target))){
+			if(!($target instanceof Living) or !$this->targetOption($target, $this->distanceSquared($target))){
 				$near = PHP_INT_MAX;
-				foreach($this->getLevel()->getEntities() as $creature){
-					if($creature === $this || !($creature instanceof Creature) || $creature instanceof Animal){
+				foreach($this->getWorld()->getEntities() as $creature){
+					if($creature === $this || !($creature instanceof Living) || $creature instanceof Animal){
 						continue;
 					}
 
@@ -80,7 +80,7 @@ class Vex extends FlyingMonster implements Monster{
 				}
 			}
 
-			if($this->getBaseTarget() instanceof Creature && $this->getBaseTarget()->isAlive()){
+			if($this->getBaseTarget() instanceof Living && $this->getBaseTarget()->isAlive()){
 				return;
 			}
 
@@ -105,8 +105,8 @@ class Vex extends FlyingMonster implements Monster{
 		}
 
 		if($this->motion->y === $this->gravity * 2){
-			return $this->level->getBlock(new Vector3(Math::floorFloat($this->x), (int) $this->y, Math::floorFloat($this->z))) instanceof Liquid;
-		}else if($this->level->getBlock(new Vector3(Math::floorFloat($this->x), (int) ($this->y + 0.8), Math::floorFloat($this->z))) instanceof Liquid){
+			return $this->getWorld()->getBlock(new Vector3(Math::floorFloat($this->x), (int) $this->y, Math::floorFloat($this->z))) instanceof Liquid;
+		}else if($this->getWorld()->getBlock(new Vector3(Math::floorFloat($this->x), (int) ($this->y + 0.8), Math::floorFloat($this->z))) instanceof Liquid){
 			$this->motion->y = $this->gravity * 2;
 			return true;
 		}
@@ -115,7 +115,7 @@ class Vex extends FlyingMonster implements Monster{
 			return false;
 		}
 
-		$block = $this->level->getBlock($this->add($dx, 0, $dz));
+		$block = $this->getWorld()->getBlock($this->add($dx, 0, $dz));
 		if($block instanceof StoneSlab || $block instanceof Stair){
 			$this->motion->y = 0.5;
 			return true;
@@ -146,10 +146,10 @@ class Vex extends FlyingMonster implements Monster{
 				$this->motion->x = 0;
 				$this->motion->z = 0;
 			}else{
-				if($this->getBaseTarget() instanceof Creature){
+				if($this->getBaseTarget() instanceof Living){
 					$this->motion->x = 0;
 					$this->motion->z = 0;
-					if($this->distance($this->getBaseTarget()) > $this->y - $this->getLevel()->getHighestBlockAt((int) $this->x, (int) $this->z)){
+					if($this->distance($this->getBaseTarget()) > $this->y - $this->getWorld()->getHighestBlockAt((int) $this->x, (int) $this->z)){
 						$this->motion->y = $this->gravity;
 					}else{
 						$this->motion->y = 0;

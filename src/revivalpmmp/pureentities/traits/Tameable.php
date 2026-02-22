@@ -25,7 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\BaseEntity;
 use revivalpmmp\pureentities\PluginConfiguration;
@@ -120,7 +120,7 @@ trait Tameable{
 					$this->propertyManager->setLong(Entity::DATA_OWNER_EID, $ownerEID);
 				}
 				$this->setTamed(true);
-				foreach($this->getLevel()->getPlayers() as $levelPlayer){
+				foreach($this->getWorld()->getPlayers() as $levelPlayer){
 					if(strcasecmp($levelPlayer->getName(), $owner) === 0){
 						$this->owner = $levelPlayer;
 						break;
@@ -191,7 +191,7 @@ trait Tameable{
 	private function getPositionNearOwner(Player $owner, BaseEntity $pet) : Vector3{
 		$x = $owner->x + (mt_rand(2, 3) * (mt_rand(0, 1) === 1 ?: -1));
 		$z = $owner->z + (mt_rand(2, 3) * (mt_rand(0, 1) === 1 ?: -1));
-		$pos = PureEntities::getSuitableHeightPosition($x, $owner->y, $z, $pet->getLevel());
+		$pos = PureEntities::getSuitableHeightPosition($x, $owner->y, $z, $pet->getWorld());
 		if($pos !== null){
 			return new Vector3($x, $pos->y, $z);
 		}else{
@@ -299,7 +299,7 @@ trait Tameable{
 	 */
 	public function mapOwner(){
 		if($this->ownerName !== null){
-			foreach($this->getLevel()->getPlayers() as $player){
+			foreach($this->getWorld()->getPlayers() as $player){
 				if(strcasecmp($this->ownerName, $player->getName()) === 0){
 					$this->owner = $player;
 					PureEntities::logOutput("$this: mapOwner to $player");

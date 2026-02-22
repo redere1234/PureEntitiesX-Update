@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
@@ -95,7 +95,7 @@ class WitherSkeleton extends Skeleton{
 			$drops = parent::getDrops();
 			switch(mt_rand(0, 8)){
 				case 1:
-					array_push($drops, Item::get(Item::MOB_HEAD, 1, mt_rand(0, 2)));
+					array_push($drops, ItemFactory::getInstance()->get(Item::MOB_HEAD, 1, mt_rand(0, 2)));
 					break;
 			}
 		}
