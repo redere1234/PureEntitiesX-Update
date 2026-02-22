@@ -194,9 +194,9 @@ abstract class BaseEntity extends Living implements IntfCanBreed, IntfTameable
         return $this->maxJumpHeight;
     }
 
-    public function initEntity(): void
+    public function initEntity(CompoundTag $nbt): void
     {
-        parent::initEntity();
+        parent::initEntity($nbt);
         $this->loadNBT();
         $this->setDataFlag(self::DATA_FLAG_NO_AI, self::DATA_TYPE_BYTE, true);
         $this->idlingComponent->loadFromNBT();
