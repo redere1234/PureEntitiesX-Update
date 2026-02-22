@@ -23,6 +23,7 @@ use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\monster\flying\Blaze;
 use revivalpmmp\pureentities\entity\monster\Monster;
 use revivalpmmp\pureentities\entity\monster\walking\Wolf;
+use revivalpmmp\pureentities\features\IntfCanBreed;
 use revivalpmmp\pureentities\features\IntfCanPanic;
 use revivalpmmp\pureentities\features\IntfTameable;
 use revivalpmmp\pureentities\PluginConfiguration;
